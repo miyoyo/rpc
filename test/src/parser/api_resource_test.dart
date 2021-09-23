@@ -2,6 +2,8 @@
 // for details. All rights reserved. Use of this source code is governed by a
 // BSD-style license that can be found in the LICENSE file.
 
+
+
 library api_resource_tests;
 
 import 'package:rpc/rpc.dart';
@@ -62,7 +64,7 @@ void main() {
       var parser = new ApiParser();
       ApiConfig apiCfg = parser.parse(new CorrectResourceApi1());
       expect(apiCfg.resources.length, 1);
-      ApiConfigResource resource = apiCfg.resources['aResource'];
+      ApiConfigResource resource = apiCfg.resources['aResource']!;
       expect(resource, isNotNull);
       expect(resource.name, 'aResource');
       Map expectedResources = {
@@ -70,7 +72,7 @@ void main() {
       };
       var discoveryDoc = apiCfg.generateDiscoveryDocument('baseUrl', null);
       // Encode the discovery document for the Tester API as json.
-      var json = discoveryDocSchema.toResponse(discoveryDoc);
+      var json = discoveryDocSchema!.toResponse(discoveryDoc);
       expect(json['resources'], expectedResources);
     });
 
@@ -78,7 +80,7 @@ void main() {
       var parser = new ApiParser();
       ApiConfig apiCfg = parser.parse(new CorrectResourceApi2());
       expect(apiCfg.resources.length, 1);
-      ApiConfigResource resource = apiCfg.resources['anotherResource'];
+      ApiConfigResource resource = apiCfg.resources['anotherResource']!;
       expect(resource, isNotNull);
       expect(resource.name, 'anotherResource');
       // Make sure the default name is not used for the resource.
@@ -88,7 +90,7 @@ void main() {
       };
       var discoveryDoc = apiCfg.generateDiscoveryDocument('baseUrl', null);
       // Encode the discovery document for the Tester API as json.
-      var json = discoveryDocSchema.toResponse(discoveryDoc);
+      var json = discoveryDocSchema!.toResponse(discoveryDoc);
       expect(json['resources'], expectedResources);
     });
 
@@ -96,7 +98,7 @@ void main() {
       var parser = new ApiParser();
       ApiConfig apiCfg = parser.parse(new CorrectResourceApi3());
       expect(apiCfg.resources.length, 1);
-      ApiConfigResource resource = apiCfg.resources['aResource'];
+      ApiConfigResource resource = apiCfg.resources['aResource']!;
       expect(resource, isNotNull);
       expect(resource.name, 'aResource');
       // Make sure the field with no annotation is not part of the api.
@@ -106,7 +108,7 @@ void main() {
       };
       var discoveryDoc = apiCfg.generateDiscoveryDocument('baseUrl', null);
       // Encode the discovery document for the Tester API as json.
-      var json = discoveryDocSchema.toResponse(discoveryDoc);
+      var json = discoveryDocSchema!.toResponse(discoveryDoc);
       expect(json['resources'], expectedResources);
     });
 
@@ -114,10 +116,10 @@ void main() {
       var parser = new ApiParser();
       ApiConfig apiCfg = parser.parse(new CorrectResourceApi4());
       expect(apiCfg.resources.length, 2);
-      ApiConfigResource resource = apiCfg.resources['aResource'];
+      ApiConfigResource resource = apiCfg.resources['aResource']!;
       expect(resource, isNotNull);
       expect(resource.name, 'aResource');
-      resource = apiCfg.resources['anotherResource'];
+      resource = apiCfg.resources['anotherResource']!;
       expect(resource, isNotNull);
       expect(resource.name, 'anotherResource');
       Map expectedResources = {
@@ -126,7 +128,7 @@ void main() {
       };
       var discoveryDoc = apiCfg.generateDiscoveryDocument('baseUrl', null);
       // Encode the discovery document for the Tester API as json.
-      var json = discoveryDocSchema.toResponse(discoveryDoc);
+      var json = discoveryDocSchema!.toResponse(discoveryDoc);
       expect(json['resources'], expectedResources);
     });
   });
@@ -149,7 +151,7 @@ void main() {
     test('wrong-resource-api-2', () {
       var parser = new ApiParser();
       ApiConfig apiCfg = parser.parse(new WrongResourceApi2());
-      ApiConfigResource resource = apiCfg.resources['aResource'];
+      ApiConfigResource? resource = apiCfg.resources['aResource'];
       expect(resource, isNotNull);
       expect(apiCfg.resources.length, 1);
       expect(parser.isValid, isFalse);

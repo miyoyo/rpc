@@ -2,6 +2,8 @@
 // for details. All rights reserved. Use of this source code is governed by a
 // BSD-style license that can be found in the LICENSE file.
 
+
+
 library multipleapis;
 
 import 'package:rpc/src/annotations.dart';
@@ -53,7 +55,7 @@ class ApiTwoApi {
   }
 
   @ApiMethod(path: 'apitwo/delete', method: 'DELETE')
-  VoidMessage apiTwoDelete() {
+  VoidMessage? apiTwoDelete() {
     return null;
   }
 }

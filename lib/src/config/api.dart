@@ -7,12 +7,13 @@ part of rpc.config;
 class ApiConfig extends ApiConfigResource {
   final String apiKey;
   final String version;
-  final String title;
-  final String description;
+  final String? title;
+  final String? description;
 
   final Map<String, ApiConfigSchema> _schemaMap;
 
   // Method map from {$HttpMethod$NumberOfPathSegments} to list of methods.
+  // ignore: todo
   // TODO: Measure method lookup and possibly change to tree structure to
   // avoid the list.
   final Map<String, List<ApiConfigMethod>> _methodMap;
@@ -30,9 +31,10 @@ class ApiConfig extends ApiConfigResource {
       : super(name, resources, methods);
 
   Future<HttpApiResponse> handleHttpRequest(ParsedHttpApiRequest request) {
-    final List<ApiConfigMethod> methods = _methodMap[request.methodKey];
+    final List<ApiConfigMethod>? methods = _methodMap[request.methodKey];
     if (methods != null) {
       for (var method in methods) {
+        // ignore: todo
         // TODO: improve performance of this (measure first).
         if (method.matches(request)) {
           return method.invokeHttpRequest(request);
@@ -62,7 +64,7 @@ class ApiConfig extends ApiConfigResource {
       requestedHttpMethods.forEach((String httpMethod) {
         var methodKey =
             request.methodKey.replaceFirst('OPTIONS', httpMethod.trim());
-        final List<ApiConfigMethod> methods = _methodMap[methodKey];
+        final List<ApiConfigMethod>? methods = _methodMap[methodKey];
         if (methods != null) {
           for (var method in methods) {
             if (method.matches(request)) {
@@ -87,7 +89,7 @@ class ApiConfig extends ApiConfigResource {
   }
 
   discovery.RestDescription generateDiscoveryDocument(
-      String baseUrl, String apiPrefix) {
+      String baseUrl, String? apiPrefix) {
     String servicePath;
     if (!baseUrl.endsWith('/')) {
       baseUrl = '$baseUrl/';
@@ -125,7 +127,7 @@ class ApiConfig extends ApiConfigResource {
     }
 
     // Compute the etag.
-    var jsonDoc = discoveryDocSchema.toResponse(doc);
+    var jsonDoc = discoveryDocSchema!.toResponse(doc);
     var sha1Digest = sha1.convert(utf8.encode(jsonEncode(jsonDoc)));
     doc.etag = hex.encode(sha1Digest.bytes);
     return doc;
@@ -143,6 +145,7 @@ class ApiConfig extends ApiConfigResource {
 
   discovery.DirectoryListItems get asDirectoryListItem {
     var item = new discovery.DirectoryListItems();
+    // ignore: todo
     // TODO: Support preferred, icons, and documentation link as part
     // of metadata.
     item

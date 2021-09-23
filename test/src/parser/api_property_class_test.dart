@@ -2,6 +2,8 @@
 // for details. All rights reserved. Use of this source code is governed by a
 // BSD-style license that can be found in the LICENSE file.
 
+
+
 library api_property_class_tests;
 
 import 'dart:mirrors';
@@ -14,47 +16,47 @@ import 'package:test/test.dart';
 
 // Simple class used as a property type in the below unittests.
 class SomeClass {
-  int foo;
-  String bar;
+  int? foo;
+  String? bar;
 }
 
 class CorrectClass {
-  SomeClass aClass;
+  SomeClass? aClass;
 
   @ApiProperty(name: 'anotherName', description: 'Description of a Class.')
-  SomeClass aNamedClass;
+  SomeClass? aNamedClass;
 
   @ApiProperty(required: true)
-  SomeClass aRequiredClass;
+  SomeClass? aRequiredClass;
 
   @ApiProperty(required: false)
-  SomeClass anOptionalClass;
+  SomeClass? anOptionalClass;
 
   @ApiProperty(
       name: 'aFullClass',
       description: 'Description of a Class.',
       required: true)
-  SomeClass aClassWithAllAnnotations;
+  SomeClass? aClassWithAllAnnotations;
 
   @ApiProperty(ignore: true)
-  SomeClass ignored;
+  SomeClass? ignored;
 }
 
 class WrongClass {
   @ApiProperty(defaultValue: 'A const class value?')
-  SomeClass aClassWithDefault;
+  SomeClass? aClassWithDefault;
 
   @ApiProperty(minValue: 0, maxValue: 1)
-  SomeClass aClassWithMinMax;
+  SomeClass? aClassWithMinMax;
 
   @ApiProperty(format: 'int32')
-  SomeClass aClassWithFormat;
+  SomeClass? aClassWithFormat;
 
   @ApiProperty(values: const {'enumValue': 'Enum Description'})
-  SomeClass aClassWithEnumValues;
+  SomeClass? aClassWithEnumValues;
 }
 
-final ApiConfigSchema jsonSchema =
+final ApiConfigSchema? jsonSchema =
     new ApiParser().parseSchema(reflectClass(discovery.JsonSchema), false);
 
 void main() {
@@ -62,12 +64,12 @@ void main() {
     test('simple', () {
       var parser = new ApiParser();
       ApiConfigSchema apiSchema =
-          parser.parseSchema(reflectClass(CorrectClass), true);
+          parser.parseSchema(reflectClass(CorrectClass), true)!;
       expect(parser.isValid, isTrue);
       expect(parser.apiSchemas.length, 2);
       expect(parser.apiSchemas['CorrectClass'], apiSchema);
       expect(parser.apiSchemas['SomeClass'], isNotNull);
-      var json = jsonSchema.toResponse(apiSchema.asDiscovery);
+      var json = jsonSchema!.toResponse(apiSchema.asDiscovery);
       var expectedJson = {
         'id': 'CorrectClass',
         'type': 'object',

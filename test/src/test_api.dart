@@ -12,22 +12,16 @@ import 'test_api/messages2.dart' as messages2;
 part 'test_api/messages.dart';
 
 class WrongMethods {
-  @ApiMethod()
-  void missingAnnotations1() {}
-
-  @ApiMethod(name: 'test1')
-  void missingAnnotations2() {}
-
   @ApiMethod(path: 'test2')
   void missingAnnotations3() {}
 
   @ApiMethod(name: 'test3', method: 'GET', path: 'test3')
-  VoidMessage wrongMethodParameter(VoidMessage _) {
+  VoidMessage? wrongMethodParameter(VoidMessage _) {
     return null;
   }
 
   @ApiMethod(name: 'test4', method: 'GET', path: 'test4')
-  VoidMessage wrongPathAnnotation(String test) {
+  VoidMessage? wrongPathAnnotation(String test) {
     return null;
   }
 
@@ -52,12 +46,12 @@ class WrongMethods {
   }
 
   @ApiMethod(name: 'test9', method: 'GET', path: 'test9/{id}')
-  VoidMessage missingPathParam1() {
+  VoidMessage? missingPathParam1() {
     return null;
   }
 
   @ApiMethod(name: 'test10', method: 'POST', path: 'test10/{id}')
-  VoidMessage missingPathParam2(TestMessage1 request) {
+  VoidMessage? missingPathParam2(TestMessage1 request) {
     return null;
   }
 
@@ -65,27 +59,27 @@ class WrongMethods {
   void voidResponse(VoidMessage _) {}
 
   @ApiMethod(name: 'test12', method: 'POST', path: 'test12')
-  VoidMessage noRequest1() {
+  VoidMessage? noRequest1() {
     return null;
   }
 
   @ApiMethod(name: 'test13', method: 'POST', path: 'test13/{id}')
-  VoidMessage noRequest2(String id) {
+  VoidMessage? noRequest2(String id) {
     return null;
   }
 
   @ApiMethod(name: 'test14', method: 'POST', path: 'test14')
-  VoidMessage genericRequest(request) {
+  VoidMessage? genericRequest(request) {
     return null;
   }
 
   @ApiMethod(name: 'test15', method: 'GET', path: 'test15/{wrong')
-  VoidMessage invalidPath1() {
+  VoidMessage? invalidPath1() {
     return null;
   }
 
   @ApiMethod(name: 'test16', method: 'GET', path: 'test16/wrong}')
-  VoidMessage invalidPath2() {
+  VoidMessage? invalidPath2() {
     return null;
   }
 }
@@ -93,12 +87,12 @@ class WrongMethods {
 @ApiClass(version: 'v1')
 class Recursive {
   @ApiMethod(name: 'test1', method: 'POST', path: 'test1')
-  VoidMessage resursiveMethod1(RecursiveMessage1 request) {
+  VoidMessage? resursiveMethod1(RecursiveMessage1 request) {
     return null;
   }
 
   @ApiMethod(name: 'test2', method: 'POST', path: 'test2')
-  VoidMessage resursiveMethod2(RecursiveMessage2 request) {
+  VoidMessage? resursiveMethod2(RecursiveMessage2 request) {
     return null;
   }
 }
@@ -112,12 +106,12 @@ class CorrectSimple {
   CorrectMethods _cmNonFinal = new CorrectMethods();
 
   @ApiMethod(path: 'test1/{path}')
-  VoidMessage simple1(String path) {
+  VoidMessage? simple1(String path) {
     return null;
   }
 
   @ApiMethod(method: 'POST', path: 'test2')
-  TestMessage1 simple2(TestMessage1 request) {
+  TestMessage1? simple2(TestMessage1 request) {
     return null;
   }
 
@@ -129,7 +123,7 @@ class CorrectSimple {
 @ApiClass(name: 'correct', version: 'v1')
 class CorrectMethods {
   @ApiMethod(name: 'test1', path: 'test1')
-  VoidMessage method1() {
+  VoidMessage? method1() {
     return null;
   }
 
@@ -159,7 +153,7 @@ class CorrectMethods {
   }
 
   @ApiMethod(name: 'test7', method: 'POST', path: 'test7')
-  VoidMessage method7(TestMessage1 request) {
+  VoidMessage? method7(TestMessage1 request) {
     return null;
   }
 
@@ -179,7 +173,7 @@ class CorrectMethods {
   }
 
   @ApiMethod(name: 'test11', method: 'POST', path: 'test11/{count}')
-  VoidMessage method11(String count, TestMessage1 request) {
+  VoidMessage? method11(String count, TestMessage1 request) {
     return null;
   }
 
@@ -194,7 +188,7 @@ class CorrectMethods {
   }
 
   @ApiMethod(name: 'test14', method: 'POST', path: 'test14/{count}/bar')
-  VoidMessage method14(String count, TestMessage1 request) {
+  VoidMessage? method14(String count, TestMessage1 request) {
     return null;
   }
 
@@ -215,9 +209,6 @@ class CorrectMethods {
 }
 
 class NoAnnotation {}
-
-@ApiClass()
-class NoVersion {}
 
 @ApiClass(name: 'Tester', version: 'v1test')
 class Tester {}
@@ -263,21 +254,21 @@ class TesterWithMultipleResourceAnnotations {
 class MultipleMethodAnnotations {
   @ApiMethod(path: 'multi')
   @ApiMethod(path: 'multi2')
-  VoidMessage multiAnnotations() {
+  VoidMessage? multiAnnotations() {
     return null;
   }
 }
 
 class SomeResource {
   @ApiMethod(path: 'someResourceMethod')
-  VoidMessage method1() {
+  VoidMessage? method1() {
     return null;
   }
 }
 
 class NamedResource {
   @ApiMethod(path: 'namedResourceMethod')
-  VoidMessage method1() {
+  VoidMessage? method1() {
     return null;
   }
 }
@@ -289,7 +280,7 @@ class ResourceWithNested {
 
 class NestedResource {
   @ApiMethod(path: 'nestedResourceMethod')
-  VoidMessage method1() {
+  VoidMessage? method1() {
     return null;
   }
 }
@@ -297,37 +288,37 @@ class NestedResource {
 @ApiClass(version: 'v1test')
 class CorrectQueryParameterTester {
   @ApiMethod(path: 'query1')
-  VoidMessage query1({String name}) {
+  VoidMessage? query1({String? name}) {
     return null;
   }
 
   @ApiMethod(path: 'query2/{pathParam}')
-  VoidMessage query2(String pathParam, {String queryParam}) {
+  VoidMessage? query2(String pathParam, {String? queryParam}) {
     return null;
   }
 
   @ApiMethod(path: 'query3')
-  VoidMessage query3({String qp1, String qp2}) {
+  VoidMessage? query3({String? qp1, String? qp2}) {
     return null;
   }
 
   @ApiMethod(path: 'query4')
-  VoidMessage query4({int qp}) {
+  VoidMessage? query4({int? qp}) {
     return null;
   }
 
   @ApiMethod(path: 'query5')
-  VoidMessage query5({String qp1, int qp2}) {
+  VoidMessage? query5({String? qp1, int? qp2}) {
     return null;
   }
 
   @ApiMethod(path: 'query6')
-  VoidMessage query6({int qp1, String qp2}) {
+  VoidMessage? query6({int? qp1, String? qp2}) {
     return null;
   }
 
   @ApiMethod(path: 'query7')
-  VoidMessage query7({int qp1, int qp2}) {
+  VoidMessage? query7({int? qp1, int? qp2}) {
     return null;
   }
 }
@@ -335,27 +326,27 @@ class CorrectQueryParameterTester {
 @ApiClass(version: 'v1test')
 class WrongQueryParameterTester {
   @ApiMethod(path: 'query1')
-  VoidMessage query1(String path) {
+  VoidMessage? query1(String path) {
     return null;
   }
 
   @ApiMethod(path: 'query2/{queryParam}')
-  VoidMessage query2(String pathParam, {String queryParam}) {
+  VoidMessage? query2(String pathParam, {String? queryParam}) {
     return null;
   }
 
   @ApiMethod(path: 'query3')
-  VoidMessage query3({queryParam}) {
+  VoidMessage? query3({queryParam}) {
     return null;
   }
 
   @ApiMethod(path: 'query4/{queryParam}')
-  VoidMessage query4({String queryParam}) {
+  VoidMessage? query4({String? queryParam}) {
     return null;
   }
 
   @ApiMethod(path: 'query5')
-  VoidMessage query5([String queryParam]) {
+  VoidMessage? query5([String? queryParam]) {
     return null;
   }
 }

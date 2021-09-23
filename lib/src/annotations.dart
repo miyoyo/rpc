@@ -13,7 +13,7 @@ class ApiClass {
   /// API name.
   ///
   /// E.g. 'storage'.
-  final String name;
+  final String? name;
 
   /// API version.
   final String version;
@@ -21,12 +21,13 @@ class ApiClass {
   /// API title.
   ///
   /// E.g. 'Ajax Storage API'.
-  final String title;
+  final String? title;
 
   /// API description.
-  final String description;
+  final String? description;
 
-  const ApiClass({this.name, this.version, this.title, this.description});
+  const ApiClass(
+      {this.name, required this.version, this.title, this.description});
 }
 
 /// Use as annotation for your API resources that should be added to a parent
@@ -35,7 +36,7 @@ class ApiResource {
   /// Name of the resource.
   ///
   /// Defaults to the camel-case version of the class name if not specified.
-  final String name;
+  final String? name;
 
   const ApiResource({this.name});
 }
@@ -45,7 +46,7 @@ class ApiMethod {
   /// Name of the method.
   ///
   /// Defaults to the camel-case version of the class name if not.
-  final String name;
+  final String? name;
 
   /// Path used to route a message to the method.
   ///
@@ -59,21 +60,22 @@ class ApiMethod {
   ///
   /// Can be `GET`, `POST`, `PUT`, `PATCH`, `DELETE`.
   /// Defaults to `GET`.
-  final String method;
+  final String? method;
 
   /// Description of the method.
-  final String description;
+  final String? description;
 
-  const ApiMethod({this.name, this.path, this.method: 'GET', this.description});
+  const ApiMethod(
+      {this.name, required this.path, this.method: 'GET', this.description});
 }
 
 /// Optional annotation for parameters inside of API request/response messages.
 class ApiProperty {
   /// Optional name to use when serializing and deserializing the property.
-  final String name;
+  final String? name;
 
   /// description of the property to be included in the discovery document.
-  final String description;
+  final String? description;
 
   /// Specifies the representation of int and double properties in the backend.
   ///
@@ -82,7 +84,7 @@ class ApiProperty {
   /// requests/responses.
   ///
   /// Possible values for double: 'double' (default), 'float'.
-  final String format;
+  final String? format;
 
   /// Whether the property is required.
   ///
@@ -90,13 +92,13 @@ class ApiProperty {
   /// The generated discovery document will include the required field to
   /// allow client stub generators to validate the request or response as
   /// required.
-  final bool required;
+  final bool? required;
 
   /// Whether the property should be ignored.
   ///
   /// For a request this means the field is left uninitialized. For a response
   /// the field is left out of the response if true.
-  final bool ignore;
+  final bool? ignore;
 
   /// Default value for this property if it's not supplied.
   final dynamic defaultValue;
@@ -109,7 +111,7 @@ class ApiProperty {
 
   /// Possible values for enum properties, as value - description pairs.
   ///  Properties using this will have to be String.
-  final Map<String, String> values;
+  final Map<String, String>? values;
 
   const ApiProperty(
       {this.name,

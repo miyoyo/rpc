@@ -98,7 +98,7 @@ class CorrectMethodApiListMap {
   }
 
   @ApiMethod(path: 'takesList', method: 'POST')
-  VoidMessage test2(List<String> request) {
+  VoidMessage? test2(List<String> request) {
     return null;
   }
 
@@ -108,61 +108,51 @@ class CorrectMethodApiListMap {
   }
 
   @ApiMethod(path: 'takesMap', method: 'POST')
-  VoidMessage test4(Map<String, int> request) {
+  VoidMessage? test4(Map<String, int> request) {
     return null;
   }
 
   @ApiMethod(path: 'takesMapOfList', method: 'POST')
-  List<Map<String, bool>> test5(Map<String, List<int>> request) {
+  List<Map<String, bool>>? test5(Map<String, List<int>> request) {
     return null;
   }
 
   @ApiMethod(path: 'takeListOfList', method: 'POST')
-  List<List<bool>> test6(List<List<int>> request) {
+  List<List<bool>>? test6(List<List<int>> request) {
     return null;
   }
 
   @ApiMethod(path: 'takeMapOfMap', method: 'POST')
-  Map<String, Map<String, bool>> test7(Map<String, Map<String, int>> request) {
+  Map<String, Map<String, bool>>? test7(Map<String, Map<String, int>> request) {
     return null;
   }
 }
 
 class WrongMethodApi {
   @ApiMethod(path: 'invalidMethod', method: 'Invalid_Http_Method')
-  VoidMessage invalidHttpMethod() {
-    return null;
-  }
-
-  @ApiMethod()
-  VoidMessage noPath() {
-    return null;
-  }
-
-  @ApiMethod(name: 'noPath')
-  VoidMessage nameNoPath() {
+  VoidMessage? invalidHttpMethod() {
     return null;
   }
 
   @ApiMethod(path: '/invalidPath')
-  VoidMessage invalidPath() {
+  VoidMessage? invalidPath() {
     return null;
   }
 }
 
 class WrongMethodApiWithPathParam {
   @ApiMethod(path: 'missingPathParam')
-  VoidMessage missingPathParam(String missing) {
+  VoidMessage? missingPathParam(String missing) {
     return null;
   }
 
   @ApiMethod(path: 'missingMethodParam/{id}')
-  VoidMessage missingMethodParam() {
+  VoidMessage? missingMethodParam() {
     return null;
   }
 
   @ApiMethod(path: 'mismatchMethodParam/{aMessage}')
-  VoidMessage mismatchMethodParam(SimpleMessage aMessage) {
+  VoidMessage? mismatchMethodParam(SimpleMessage aMessage) {
     return null;
   }
 }
@@ -200,7 +190,7 @@ class WrongMethodApiList {
   }
 
   @ApiMethod(path: 'takesUnboundList', method: 'POST')
-  VoidMessage test2(List request) {
+  VoidMessage? test2(List request) {
     return null;
   }
 
@@ -210,12 +200,12 @@ class WrongMethodApiList {
   }
 
   @ApiMethod(path: 'takesDynamicList', method: 'POST')
-  VoidMessage test4(List<dynamic> request) {
+  VoidMessage? test4(List<dynamic> request) {
     return null;
   }
 
   @ApiMethod(path: 'takesListOfList', method: 'POST')
-  VoidMessage test5(List<List> request) {
+  VoidMessage? test5(List<List> request) {
     return null;
   }
 }
@@ -228,7 +218,7 @@ class WrongMethodApiMap {
   }
 
   @ApiMethod(path: 'takesUnboundMap', method: 'POST')
-  VoidMessage test2(Map request) {
+  VoidMessage? test2(Map request) {
     return null;
   }
 
@@ -238,7 +228,7 @@ class WrongMethodApiMap {
   }
 
   @ApiMethod(path: 'takesDynamicMap', method: 'POST')
-  VoidMessage test4(Map<String, dynamic> request) {
+  VoidMessage? test4(Map<String, dynamic> request) {
     return null;
   }
 
@@ -248,12 +238,12 @@ class WrongMethodApiMap {
   }
 
   @ApiMethod(path: 'takesInvalidKeyMap', method: 'POST')
-  VoidMessage test6(Map<int, String> request) {
+  VoidMessage? test6(Map<int, String> request) {
     return null;
   }
 
   @ApiMethod(path: 'takesMapOfMap', method: 'POST')
-  VoidMessage test7(Map<int, Map> request) {
+  VoidMessage? test7(Map<int, Map> request) {
     return null;
   }
 }
@@ -261,12 +251,12 @@ class WrongMethodApiMap {
 @ApiClass(version: 'v1')
 class WrongMethodApiAmbiguousPaths1 {
   @ApiMethod(path: 'test1')
-  VoidMessage method1a() {
+  VoidMessage? method1a() {
     return null;
   }
 
   @ApiMethod(path: 'test1')
-  VoidMessage method1b() {
+  VoidMessage? method1b() {
     return null;
   }
 }
@@ -274,17 +264,17 @@ class WrongMethodApiAmbiguousPaths1 {
 @ApiClass(version: 'v1')
 class WrongMethodApiAmbiguousPaths2 {
   @ApiMethod(path: 'test2/{path}')
-  VoidMessage method2a(String path) {
+  VoidMessage? method2a(String path) {
     return null;
   }
 
   @ApiMethod(path: 'test2/path')
-  VoidMessage method2b() {
+  VoidMessage? method2b() {
     return null;
   }
 
   @ApiMethod(path: 'test2/other')
-  VoidMessage method2c() {
+  VoidMessage? method2c() {
     return null;
   }
 }
@@ -292,12 +282,12 @@ class WrongMethodApiAmbiguousPaths2 {
 @ApiClass(version: 'v1')
 class WrongMethodApiAmbiguousPaths3 {
   @ApiMethod(path: 'test3/path')
-  VoidMessage method3a() {
+  VoidMessage? method3a() {
     return null;
   }
 
   @ApiMethod(path: 'test3/{path}')
-  VoidMessage method3b(String path) {
+  VoidMessage? method3b(String path) {
     return null;
   }
 }
@@ -305,12 +295,12 @@ class WrongMethodApiAmbiguousPaths3 {
 @ApiClass(version: 'v1')
 class WrongMethodApiAmbiguousPaths4 {
   @ApiMethod(path: 'test4/{path}')
-  VoidMessage method4a(String path) {
+  VoidMessage? method4a(String path) {
     return null;
   }
 
   @ApiMethod(path: 'test4/{other}')
-  VoidMessage method4b(String other) {
+  VoidMessage? method4b(String other) {
     return null;
   }
 }
@@ -318,17 +308,17 @@ class WrongMethodApiAmbiguousPaths4 {
 @ApiClass(version: 'v1')
 class WrongMethodApiAmbiguousPaths5 {
   @ApiMethod(path: 'test5/other/some')
-  VoidMessage method5a() {
+  VoidMessage? method5a() {
     return null;
   }
 
   @ApiMethod(path: 'test5/{other}/some')
-  VoidMessage method5b(String other) {
+  VoidMessage? method5b(String other) {
     return null;
   }
 
   @ApiMethod(path: 'test5/other/{some}')
-  VoidMessage method5c(String some) {
+  VoidMessage? method5c(String some) {
     return null;
   }
 }
@@ -336,17 +326,17 @@ class WrongMethodApiAmbiguousPaths5 {
 @ApiClass(version: 'v1')
 class WrongMethodApiAmbiguousPaths6 {
   @ApiMethod(path: 'test6/{other}/some')
-  VoidMessage method6a(String other) {
+  VoidMessage? method6a(String other) {
     return null;
   }
 
   @ApiMethod(path: 'test6/other/some')
-  VoidMessage method6b() {
+  VoidMessage? method6b() {
     return null;
   }
 
   @ApiMethod(path: 'test6/other/{some}')
-  VoidMessage method6c(String some) {
+  VoidMessage? method6c(String some) {
     return null;
   }
 }
@@ -354,32 +344,32 @@ class WrongMethodApiAmbiguousPaths6 {
 @ApiClass(version: 'v1')
 class WrongMethodApiAmbiguousPaths7 {
   @ApiMethod(path: 'test7/other/{some}')
-  VoidMessage method7a(String some) {
+  VoidMessage? method7a(String some) {
     return null;
   }
 
   @ApiMethod(path: 'test7/{other}/some')
-  VoidMessage method7b(String other) {
+  VoidMessage? method7b(String other) {
     return null;
   }
 
   @ApiMethod(path: 'test7/other/some')
-  VoidMessage method7c() {
+  VoidMessage? method7c() {
     return null;
   }
 
   @ApiMethod(path: 'test7/{another}/some')
-  VoidMessage method7d(String another) {
+  VoidMessage? method7d(String another) {
     return null;
   }
 
   @ApiMethod(path: 'test7/{other}/{some}')
-  VoidMessage method7e(String other, String some) {
+  VoidMessage? method7e(String other, String some) {
     return null;
   }
 
   @ApiMethod(path: 'test7/{another}/{someother}')
-  VoidMessage method7f(String another, String someother) {
+  VoidMessage? method7f(String another, String someother) {
     return null;
   }
 }
@@ -393,7 +383,7 @@ void main() {
       expect(apiCfg.methods.length, 7);
       var discoveryDoc =
           apiCfg.generateDiscoveryDocument('http://localhost:8080', null);
-      var json = discoveryDocSchema.toResponse(discoveryDoc);
+      var json = discoveryDocSchema!.toResponse(discoveryDoc);
       var expectedSchemas = {
         'SimpleMessage': {
           'id': 'SimpleMessage',
@@ -635,39 +625,13 @@ void main() {
       var discoveryDoc =
           apiConfig.generateDiscoveryDocument('http://localhost:8080/', '');
       // Encode the discovery document for the Tester API as json.
-      var json = discoveryDocSchema.toResponse(discoveryDoc);
+      var json = discoveryDocSchema!.toResponse(discoveryDoc);
       expect(json['schemas'], expectedSchemas);
       expect(json['methods'], expectedMethods);
     });
   });
 
   group('api-common-method-wrong', () {
-    test('wrong-method-api', () {
-      var parser = new ApiParser();
-      parser.parse(new WrongMethodApi());
-      expect(parser.isValid, isFalse);
-      var expectedErrors = [
-        new ApiConfigError(
-            'WrongMethodApi: Missing required @ApiClass annotation.'),
-        new ApiConfigError(
-            'WrongMethodApi: @ApiClass.version field is required.'),
-        new ApiConfigError(
-            'WrongMethodApi.invalidHttpMethod: Unknown HTTP method: '
-            'INVALID_HTTP_METHOD.'),
-        new ApiConfigError(
-            'WrongMethodApi.invalidHttpMethod: API methods using '
-            'INVALID_HTTP_METHOD must have a signature of path parameters '
-            'followed by one request parameter.'),
-        new ApiConfigError(
-            'WrongMethodApi.noPath: ApiMethod.path field is required.'),
-        new ApiConfigError(
-            'WrongMethodApi.nameNoPath: ApiMethod.path field is required.'),
-        new ApiConfigError(
-            'WrongMethodApi.invalidPath: path cannot start with \'/\'.')
-      ];
-      expect(parser.errors.toString(), expectedErrors.toString());
-    });
-
     test('wrong-method-api-path-param', () {
       var parser = new ApiParser();
       parser.parse(new WrongMethodApiWithPathParam());

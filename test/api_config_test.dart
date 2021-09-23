@@ -27,15 +27,6 @@ void main() {
       ];
       expect(parser.errors.toString(), expected.toString());
     });
-
-    test('no_apiclass_version', () {
-      var parser = new ApiParser();
-      parser.parse(new NoVersion());
-      var expected = [
-        new ApiConfigError('NoVersion: @ApiClass.version field is required.')
-      ];
-      expect(parser.errors.toString(), expected.toString());
-    });
   });
 
   group('api_config_correct', () {
@@ -64,7 +55,7 @@ void main() {
       var discoveryDoc =
           apiConfig.generateDiscoveryDocument('http://localhost:8080/', '');
       // Encode the discovery document for the Tester API as json.
-      var json = discoveryDocSchema.toResponse(discoveryDoc);
+      var json = discoveryDocSchema!.toResponse(discoveryDoc);
       expect(json, expectedJson);
     });
 
@@ -144,7 +135,7 @@ void main() {
       };
       var discoveryDoc =
           apiConfig.generateDiscoveryDocument('http://localhost:8080/', null);
-      var json = discoveryDocSchema.toResponse(discoveryDoc);
+      var json = discoveryDocSchema!.toResponse(discoveryDoc);
       expect(json['schemas'], expectedSchemas);
       expect(json['methods'], expectedMethods);
     });
@@ -155,7 +146,7 @@ void main() {
       expect(parser.isValid, isTrue);
       var discoveryDoc =
           apiConfig.generateDiscoveryDocument('http://localhost:8080', null);
-      var json = discoveryDocSchema.toResponse(discoveryDoc);
+      var json = discoveryDocSchema!.toResponse(discoveryDoc);
       var expectedJsonMethods = {
         'test1': {
           'id': 'CorrectMethods.method1',
@@ -426,7 +417,7 @@ void main() {
       expect(parser.isValid, isTrue);
       var discoveryDoc =
           apiConfig.generateDiscoveryDocument('http://localhost:8080', null);
-      var json = discoveryDocSchema.toResponse(discoveryDoc);
+      var json = discoveryDocSchema!.toResponse(discoveryDoc);
       Map expectedResources = {
         'someResource': {
           'methods': {
@@ -476,7 +467,7 @@ void main() {
       };
       var discoveryDoc =
           apiConfig.generateDiscoveryDocument('http://localhost:8080', null);
-      var json = discoveryDocSchema.toResponse(discoveryDoc);
+      var json = discoveryDocSchema!.toResponse(discoveryDoc);
       expect(json['resources'], expectedResources);
     });
 
@@ -506,73 +497,12 @@ void main() {
       };
       var discoveryDoc =
           apiConfig.generateDiscoveryDocument('http://localhost:8080', null);
-      var json = discoveryDocSchema.toResponse(discoveryDoc);
+      var json = discoveryDocSchema!.toResponse(discoveryDoc);
       expect(json['resources'], expectedResources);
     });
   });
 
   group('api_config_methods', () {
-    test('misconfig', () {
-      var parser = new ApiParser();
-      parser.parse(new WrongMethods());
-      expect(parser.isValid, isFalse);
-      var errors = [
-        new ApiConfigError(
-            'WrongMethods: Missing required @ApiClass annotation.'),
-        new ApiConfigError(
-            'WrongMethods: @ApiClass.version field is required.'),
-        new ApiConfigError('WrongMethods.missingAnnotations1: ApiMethod.path '
-            'field is required.'),
-        new ApiConfigError('WrongMethods.missingAnnotations1: API Method '
-            'cannot be void, use VoidMessage as return type instead.'),
-        new ApiConfigError('WrongMethods.missingAnnotations2: ApiMethod.path '
-            'field is required.'),
-        new ApiConfigError('WrongMethods.missingAnnotations2: API Method '
-            'cannot be void, use VoidMessage as return type instead.'),
-        new ApiConfigError('WrongMethods.missingAnnotations3: API Method '
-            'cannot be void, use VoidMessage as return type instead.'),
-        new ApiConfigError('WrongMethods.wrongMethodParameter: Non-path '
-            'parameter \'_\' must be a named parameter.'),
-        new ApiConfigError('WrongMethods.wrongMethodParameter: Query '
-            'parameter \'_\' must be of type int, String or bool.'),
-        new ApiConfigError('WrongMethods.wrongPathAnnotation: Non-path '
-            'parameter \'test\' must be a named parameter.'),
-        new ApiConfigError('WrongMethods.wrongResponseType1: Return type: '
-            'String is not a valid return type.'),
-        new ApiConfigError('WrongMethods.wrongResponseType2: Return type: '
-            'bool is not a valid return type.'),
-        new ApiConfigError('WrongMethods.wrongFutureResponse: Return type: '
-            'bool is not a valid return type.'),
-        new ApiConfigError('WrongMethods.genericFutureResponse: API Method '
-            'return type has to be a instantiable class.'),
-        new ApiConfigError('WrongMethods.missingPathParam1: Missing methods '
-            'parameters specified in method path: test9/{id}.'),
-        new ApiConfigError('WrongMethods.missingPathParam2: Expected method '
-            'parameter with name \'id\', but found parameter with name '
-            '\'request\'.'),
-        new ApiConfigError('WrongMethods.missingPathParam2: Path parameter '
-            '\'id\' must be of type int, String or bool.'),
-        new ApiConfigError('WrongMethods.missingPathParam2: API methods using '
-            'POST must have a signature of path parameters followed by one '
-            'request parameter.'),
-        new ApiConfigError('WrongMethods.voidResponse: API Method cannot be '
-            'void, use VoidMessage as return type instead.'),
-        new ApiConfigError('WrongMethods.noRequest1: API methods using POST '
-            'must have a signature of path parameters followed by one request '
-            'parameter.'),
-        new ApiConfigError('WrongMethods.noRequest2: API methods using POST '
-            'must have a signature of path parameters followed by one request '
-            'parameter.'),
-        new ApiConfigError('WrongMethods.genericRequest: API Method parameter '
-            'has to be an instantiable class.'),
-        new ApiConfigError('WrongMethods.invalidPath1: Invalid path: '
-            'test15/{wrong. Failed with error: ParseException: test15/{wrong'),
-        new ApiConfigError('WrongMethods.invalidPath2: Invalid path: '
-            'test16/wrong}. Failed with error: ParseException: test16/wrong}')
-      ];
-      expect(parser.errors.toString(), errors.toString());
-    });
-
     test('recursion', () {
       var parser = new ApiParser();
       parser.parse(new Recursive());
@@ -642,7 +572,7 @@ void main() {
 
     test('variants', () {
       var parser = new ApiParser();
-      var message = parser.parseSchema(reflectClass(TestMessage3), true);
+      var message = parser.parseSchema(reflectClass(TestMessage3), true)!;
       TestMessage3 instance = message.fromRequest(
           {'count32': 1, 'count32u': 2, 'count64': '3', 'count64u': '4'});
       expect(instance.count32, 1);
@@ -658,8 +588,8 @@ void main() {
 
     test('request-parsing', () {
       var parser = new ApiParser();
-      var m1 = parser.parseSchema(reflectClass(TestMessage1), true);
-      TestMessage1 instance = m1.fromRequest({'requiredValue': 10});
+      var m1 = parser.parseSchema(reflectClass(TestMessage1), true)!;
+      TestMessage1? instance = m1.fromRequest({'requiredValue': 10});
       expect(instance, TypeMatcher<TestMessage1>());
       instance = m1.fromRequest({
         'count': 1,
@@ -677,7 +607,7 @@ void main() {
         'enumValue': 'test1',
         'limit': 50,
       });
-      expect(instance.count, 1);
+      expect(instance!.count, 1);
       expect(instance.message, 'message');
       expect(instance.value, 12.3);
       expect(instance.messages, ['1', '2', '3']);
@@ -700,7 +630,7 @@ void main() {
 
     test('request-parsing-map-list', () {
       var parser = new ApiParser();
-      var schema = parser.parseSchema(reflectClass(TestMessage5), true);
+      var schema = parser.parseSchema(reflectClass(TestMessage5), true)!;
       var jsonRequest = {
         'myStrings': ['foo', 'bar'],
         'listOfObjects': [
@@ -721,7 +651,7 @@ void main() {
     test('required', () {
       var parser = new ApiParser();
       var m1 = parser.parseSchema(reflectClass(TestMessage4), true);
-      expect(() => m1.fromRequest({'requiredValue': 1}), returnsNormally);
+      expect(() => m1!.fromRequest({'requiredValue': 1}), returnsNormally);
     });
 
     test('bad-request-creation', () {
@@ -749,7 +679,7 @@ void main() {
         {'limit': 1000}
       ];
       requests.forEach((request) {
-        expect(() => m1.fromRequest(request),
+        expect(() => m1!.fromRequest(request),
             throwsA(TypeMatcher<BadRequestError>()));
       });
     });
@@ -762,14 +692,14 @@ void main() {
         {'count': 1}
       ];
       requests.forEach((request) {
-        expect(() => m1.fromRequest(request),
+        expect(() => m1!.fromRequest(request),
             throwsA(TypeMatcher<BadRequestError>()));
       });
     });
 
     test('response-creation', () {
       var parser = new ApiParser();
-      var m1 = parser.parseSchema(reflectClass(TestMessage1), true);
+      var m1 = parser.parseSchema(reflectClass(TestMessage1), true)!;
       var instance = new TestMessage1();
       instance.count = 1;
       instance.message = 'message';
@@ -949,7 +879,7 @@ void main() {
       var discoveryDoc =
           apiConfig.generateDiscoveryDocument('http://localhost:8080/', null);
       // Encode the discovery document for the Tester API as json.
-      var json = discoveryDocSchema.toResponse(discoveryDoc);
+      var json = discoveryDocSchema!.toResponse(discoveryDoc);
       expect(json['methods'], expectedJsonMethods);
     });
 

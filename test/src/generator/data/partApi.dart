@@ -2,12 +2,14 @@
 // for details. All rights reserved. Use of this source code is governed by a
 // BSD-style license that can be found in the LICENSE file.
 
+
+
 part of libraryWithPart;
 
 @ApiClass(version: 'v1')
 class PartApi {
   @ApiMethod(path: 'partMethod')
-  VoidMessage partMethod() {
+  VoidMessage? partMethod() {
     return null;
   }
 }

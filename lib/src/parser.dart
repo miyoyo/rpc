@@ -82,6 +82,7 @@ class ApiParser {
   }
 
   void addError(String errorMessage) {
+    // ignore: todo
     // TODO: Make it configurable whether to throw or collect the errors.
     rpcLogger.severe('$_contextId: $errorMessage');
     errors.add(new ApiConfigError('$_contextId: $errorMessage'));
@@ -100,10 +101,10 @@ class ApiParser {
     _addIdSegment(id);
 
     // Parse ApiClass annotation.
-    ApiClass metaData = _getMetadata(apiClass, ApiClass);
+    ApiClass? metaData = _getMetadata(apiClass, ApiClass);
     if (metaData == null) {
       addError('Missing required @ApiClass annotation.');
-      metaData = new ApiClass();
+      metaData = new ApiClass(version: "");
     }
     var name = metaData.name;
     if (name == null || name.isEmpty) {
@@ -111,7 +112,7 @@ class ApiParser {
       name = _camelCaseName(id);
     }
     var version = metaData.version;
-    if (version == null || version.isEmpty) {
+    if (version.isEmpty) {
       addError('@ApiClass.version field is required.');
     }
     // The apiKey is used to match a request against a specific API and version.
@@ -240,7 +241,7 @@ class ApiParser {
     }
 
     // Parse HTTP method.
-    var httpMethod = metadata.method.toUpperCase();
+    var httpMethod = metadata.method?.toUpperCase() ?? "";
     if (!allowedMethods.contains(httpMethod)) {
       addError('Unknown HTTP method: ${httpMethod}.');
     }
@@ -298,7 +299,7 @@ class ApiParser {
 
   // Parses a method's url path parameters and validates them against the
   // method signature.
-  List<ApiParameter> _parsePathParameters(MethodMirror mm, String path) {
+  List<ApiParameter> _parsePathParameters(MethodMirror mm, String? path) {
     var pathParams = <ApiParameter>[];
     if (path == null) return pathParams;
 
@@ -308,15 +309,14 @@ class ApiParser {
     // parameters since the number of path parameters is needed.
     var parsedPathParams = _pathMatcher.allMatches(path);
     if (parsedPathParams.length > 0 &&
-        (mm.parameters == null ||
-            mm.parameters.length < parsedPathParams.length)) {
+        (mm.parameters.length < parsedPathParams.length)) {
       addError('Missing methods parameters specified in method path: $path.');
       // We don't process the method mirror if not enough parameters.
       return pathParams;
     }
     for (int i = 0; i < parsedPathParams.length; ++i) {
       var pm = mm.parameters[i];
-      var pathParamName = parsedPathParams.elementAt(i).group(1);
+      var pathParamName = parsedPathParams.elementAt(i).group(1)!;
       var methodParamName = MirrorSystem.getName(pm.simpleName);
       if (methodParamName != pathParamName) {
         addError(
@@ -364,7 +364,7 @@ class ApiParser {
 
   // Parses the method's request parameter. Only called for methods using the
   // POST HTTP method.
-  ApiConfigSchema _parseMethodRequestParameter(
+  ApiConfigSchema? _parseMethodRequestParameter(
       MethodMirror mm, String httpMethod, int requestParamIndex) {
     if (mm.parameters.length != requestParamIndex + 1) {
       addError('API methods using $httpMethod must have a signature of path '
@@ -381,10 +381,10 @@ class ApiParser {
 
     // Check if the request type is a List or Map and handle that explicitly.
     if (requestType.originalDeclaration == reflectClass(List)) {
-      return parseListSchema(requestType, true);
+      return parseListSchema(requestType as ClassMirror, true);
     }
     if (requestType.originalDeclaration == reflectClass(Map)) {
-      return parseMapSchema(requestType, true);
+      return parseMapSchema(requestType as ClassMirror, true);
     }
     if (requestType is! ClassMirror ||
         requestType.simpleName == #dynamic ||
@@ -396,7 +396,7 @@ class ApiParser {
   }
 
   // Parses a method's return type and returns the equivalent ApiConfigSchema.
-  ApiConfigSchema _parseMethodReturnType(MethodMirror mm) {
+  ApiConfigSchema? _parseMethodReturnType(MethodMirror mm) {
     var returnType = mm.returnType;
     if (returnType.isSubtypeOf(reflectType(Future))) {
       var types = returnType.typeArguments;
@@ -426,15 +426,15 @@ class ApiParser {
     // Check if the return type is a List or Map and handle that explicitly.
     if (returnType.originalDeclaration == reflectClass(List)) {
       // We parse responses as requests if strict parsing is true.
-      return parseListSchema(returnType, strict);
+      return parseListSchema(returnType as ClassMirror, strict);
     }
     if (returnType.originalDeclaration == reflectClass(Map)) {
       // We parse responses as requests if strict parsing is true.
-      return parseMapSchema(returnType, strict);
+      return parseMapSchema(returnType as ClassMirror, strict);
     }
     if (returnType is! ClassMirror ||
         returnType.simpleName == #dynamic ||
-        (returnType as ClassMirror).isAbstract) {
+        returnType.isAbstract) {
       addError('API Method return type has to be a instantiable class.');
       return null;
     }
@@ -496,12 +496,13 @@ class ApiParser {
 
   // Parses a class as a schema and returns the corresponding ApiConfigSchema.
   // Adds the schema to the API's set of valid schemas.
-  ApiConfigSchema parseSchema(ClassMirror schemaClass, bool isRequest) {
+  ApiConfigSchema? parseSchema(ClassMirror schemaClass, bool isRequest) {
+    // ignore: todo
     // TODO: Add support for ApiSchema annotation for overriding default name.
     var name = MirrorSystem.getName(schemaClass.simpleName);
     _pushId(name);
 
-    ApiConfigSchema schemaConfig = apiSchemas[name];
+    ApiConfigSchema? schemaConfig = apiSchemas[name];
     if (schemaConfig != null) {
       if (schemaConfig.schemaClass.originalDeclaration !=
           schemaClass.originalDeclaration) {
@@ -566,14 +567,14 @@ class ApiParser {
 
   // Parses a list class as a schema and returns the corresponding ListSchema.
   // Adds the schema to the API's set of valid schemas.
-  NamedListSchema parseListSchema(ClassMirror schemaClass, bool isRequest) {
+  NamedListSchema? parseListSchema(ClassMirror schemaClass, bool isRequest) {
     assert(schemaClass.originalDeclaration == reflectClass(List));
     assert(schemaClass.typeArguments.length == 1);
     var itemsType = schemaClass.typeArguments[0];
     var name = canonicalName(schemaClass);
     _pushId(name);
 
-    ApiConfigSchema existingSchemaConfig = apiSchemas[name];
+    ApiConfigSchema? existingSchemaConfig = apiSchemas[name];
     if (existingSchemaConfig != null) {
       // We explicitly want the two to be the same bound class or we will fail.
       if (existingSchemaConfig.schemaClass != schemaClass) {
@@ -585,13 +586,16 @@ class ApiParser {
         existingSchemaConfig = null;
       }
       // See parseSchema for details on the below 'if'.
-      if (existingSchemaConfig.isUsedForRequest || !isRequest) {
+      if (existingSchemaConfig!.isUsedForRequest || !isRequest) {
         _popId();
-        return existingSchemaConfig;
+        return existingSchemaConfig as NamedListSchema?;
       }
     }
-    ClassMirror namedListSchema = reflectType(NamedListSchema, [schemaClass.typeArguments[0].reflectedType]);
-    var schemaConfig = namedListSchema.newInstance(const Symbol(''), [name, schemaClass, isRequest]).reflectee;
+    ClassMirror namedListSchema = reflectType(
+            NamedListSchema, [schemaClass.typeArguments[0].reflectedType])
+        as ClassMirror;
+    var schemaConfig = namedListSchema.newInstance(
+        const Symbol(''), [name, schemaClass, isRequest]).reflectee;
     // We put in the schema before parsing properties to detect cycles.
     apiSchemas[name] = schemaConfig;
     var itemsProperty = parseProperty(
@@ -604,7 +608,7 @@ class ApiParser {
 
   // Parses a map class as a schema and returns the corresponding MapSchema.
   // Adds the schema to the API's set of valid schemas.
-  NamedMapSchema parseMapSchema(ClassMirror schemaClass, bool isRequest) {
+  NamedMapSchema? parseMapSchema(ClassMirror schemaClass, bool isRequest) {
     assert(schemaClass.originalDeclaration == reflectClass(Map));
     assert(schemaClass.typeArguments.length == 2);
     var additionalType = schemaClass.typeArguments[1];
@@ -616,7 +620,7 @@ class ApiParser {
       return null;
     }
 
-    ApiConfigSchema existingSchemaConfig = apiSchemas[name];
+    ApiConfigSchema? existingSchemaConfig = apiSchemas[name];
     if (existingSchemaConfig != null) {
       // We explicitly want the two to be the same bound class or we will fail.
       if (existingSchemaConfig.schemaClass != schemaClass) {
@@ -628,14 +632,17 @@ class ApiParser {
         existingSchemaConfig = null;
       }
       // See parseSchema for details on the below 'if'.
-      if (existingSchemaConfig.isUsedForRequest || !isRequest) {
+      if (existingSchemaConfig!.isUsedForRequest || !isRequest) {
         _popId();
-        return existingSchemaConfig;
+        return existingSchemaConfig as NamedMapSchema?;
       }
     }
 
-    ClassMirror namedMapSchema = reflectType(NamedMapSchema, [schemaClass.typeArguments[1].reflectedType]);
-    var schemaConfig = namedMapSchema.newInstance(const Symbol(''), [name, schemaClass, isRequest]).reflectee;
+    ClassMirror namedMapSchema = reflectType(
+            NamedMapSchema, [schemaClass.typeArguments[1].reflectedType])
+        as ClassMirror;
+    var schemaConfig = namedMapSchema.newInstance(
+        const Symbol(''), [name, schemaClass, isRequest]).reflectee;
     // We put in the schema before parsing properties to detect cycles.
     apiSchemas[name] = schemaConfig;
     var additionalProperty = parseProperty(
@@ -678,16 +685,17 @@ class ApiParser {
       }
     });
     if (includeSuperClass && schemaClass.superclass != null) {
-      properties.addAll(_parseProperties(schemaClass.superclass, isRequest));
+      properties.addAll(
+          _parseProperties(schemaClass.superclass as ClassMirror, isRequest));
     }
     return properties;
   }
 
   // Parse a specific schema property, further dispatching based on the
   // property's type.
-  ApiConfigSchemaProperty parseProperty(TypeMirror propertyType,
+  ApiConfigSchemaProperty? parseProperty(TypeMirror propertyType,
       String propertyName, ApiProperty metadata, bool isRequest) {
-    if (metadata.ignore) {
+    if (metadata.ignore ?? false) {
       // Don't do any parsing just return null. This means this field will
       // not be part of the schema's properties and hence not be a valid value
       // to pass in the request, will not be returned in a response, and will
@@ -700,7 +708,7 @@ class ApiParser {
     }
     switch (propertyType.reflectedType) {
       case int:
-        if (metadata.format == null || metadata.format.endsWith('32')) {
+        if (metadata.format == null || metadata.format!.endsWith('32')) {
           return parseIntegerProperty(propertyName, metadata);
         } else {
           addError('$propertyName: 64 bit integers must be of type BigInt');
@@ -708,7 +716,7 @@ class ApiParser {
         }
         break;
       case BigInt:
-        if (metadata.format == null || metadata.format.endsWith('32')) {
+        if (metadata.format == null || metadata.format!.endsWith('32')) {
           addError('$propertyName: 32 bit integers must be of type int');
           return null;
         }
@@ -718,13 +726,14 @@ class ApiParser {
       case bool:
         return parseBooleanProperty(propertyName, metadata);
       case String:
-        if (metadata.values != null && metadata.values.isNotEmpty) {
+        if (metadata.values != null && metadata.values!.isNotEmpty) {
           return parseEnumProperty(propertyName, metadata);
         }
         return parseStringProperty(propertyName, metadata);
       case DateTime:
         return parseDateTimeProperty(propertyName, metadata);
     }
+    // ignore: todo
     // TODO: Could support maps that are subclasses rather
     // than only the specific Dart List and Map.
     if (propertyType is ClassMirror && !propertyType.isAbstract) {
@@ -732,9 +741,11 @@ class ApiParser {
           propertyName, metadata, propertyType, isRequest);
     } else if (propertyType.originalDeclaration
         .isSubtypeOf(reflectType(List))) {
-      return parseListProperty(propertyName, metadata, propertyType, isRequest);
+      return parseListProperty(
+          propertyName, metadata, propertyType as ClassMirror, isRequest);
     } else if (propertyType.originalDeclaration == reflectClass(Map)) {
-      return parseMapProperty(propertyName, metadata, propertyType, isRequest);
+      return parseMapProperty(
+          propertyName, metadata, propertyType as ClassMirror, isRequest);
     }
     addError('$propertyName: Unsupported property type: '
         '${propertyType.reflectedType}');
@@ -744,7 +755,6 @@ class ApiParser {
   // Parses an 'int' property.
   IntegerProperty parseIntegerProperty(
       String propertyName, ApiProperty metadata) {
-    assert(metadata != null);
     const List<Symbol> extraFields = const [
       #defaultValue,
       #format,
@@ -752,23 +762,25 @@ class ApiParser {
       #maxValue
     ];
     _checkValidFields(propertyName, 'integer', metadata, extraFields);
-    String apiFormat = metadata.format;
+    String? apiFormat = metadata.format;
     if (apiFormat == null || apiFormat.isEmpty) {
       apiFormat = 'int32';
     }
-    String apiType;
+    late String apiType;
     if (apiFormat == 'int32' || apiFormat == 'uint32') {
       apiType = 'integer';
     } else {
       addError('$propertyName: Invalid integer variant: $apiFormat. Supported '
           'variants are: int32, uint32');
     }
-    int min = metadata.minValue;
-    int max = metadata.maxValue;
-    int defaultValue = metadata.defaultValue;
+    int? min = metadata.minValue;
+    int? max = metadata.maxValue;
+    int? defaultValue = metadata.defaultValue;
 
     if (_parseInt(min, apiFormat, propertyName, 'Min') &&
         _parseInt(max, apiFormat, propertyName, 'Max')) {
+      min!;
+      max!;
       // Check that min is less than max.
       if (min > max) {
         addError('$propertyName: Invalid min/max range: [$min, $max]. Min must '
@@ -778,6 +790,7 @@ class ApiParser {
       // do the range checking.
 
       if (_parseInt(defaultValue, apiFormat, propertyName, 'Default')) {
+        defaultValue!;
         if (defaultValue < min) {
           addError('$propertyName: Default value must be >= ${min}.');
         }
@@ -793,7 +806,6 @@ class ApiParser {
   // Parses an 'int' property.
   BigIntegerProperty parseBigIntegerProperty(
       String propertyName, ApiProperty metadata) {
-    assert(metadata != null);
     const List<Symbol> extraFields = const [
       #defaultValue,
       #format,
@@ -801,21 +813,21 @@ class ApiParser {
       #maxValue
     ];
     _checkValidFields(propertyName, 'integer', metadata, extraFields);
-    String apiFormat = metadata.format;
-    String apiType;
+    String apiFormat = metadata.format!;
+    late String apiType;
     if (apiFormat == 'int64' || apiFormat == 'uint64') {
       apiType = 'string';
     } else {
       addError('$propertyName: Invalid BigInt variant: $apiFormat. Supported '
           'variants are: int64, uint64');
     }
-    BigInt min;
-    BigInt max;
-    BigInt defaultValue;
+    BigInt? min;
+    BigInt? max;
+    BigInt? defaultValue;
 
     /// Return v as it was, or via parsing a String if this is a 64 bit
     /// property.
-    BigInt _convertMetadataValue(dynamic v, String name) {
+    BigInt? _convertMetadataValue(dynamic v, String name) {
       if (v == null) return null;
       if (v is String) {
         return BigInt.parse(v);
@@ -831,6 +843,8 @@ class ApiParser {
 
     if (_parseInt(min, apiFormat, propertyName, 'Min') &&
         _parseInt(max, apiFormat, propertyName, 'Max')) {
+      min!;
+      max!;
       // Check that min is less than max.
       if (min > max) {
         addError('$propertyName: Invalid min/max range: [$min, $max]. Min must '
@@ -840,6 +854,7 @@ class ApiParser {
       // do the range checking.
 
       if (_parseInt(defaultValue, apiFormat, propertyName, 'Default')) {
+        defaultValue!;
         if (defaultValue < min) {
           addError('$propertyName: Default value must be >= ${min}.');
         }
@@ -877,10 +892,9 @@ class ApiParser {
   // Parses a 'double' property.
   DoubleProperty parseDoubleProperty(
       String propertyName, ApiProperty metadata) {
-    assert(metadata != null);
     const List<Symbol> extraFields = const [#defaultValue, #format];
     _checkValidFields(propertyName, 'double', metadata, extraFields);
-    String apiFormat = metadata.format;
+    String? apiFormat = metadata.format;
     if (apiFormat == null || apiFormat == '') {
       apiFormat = 'double';
     }
@@ -914,7 +928,6 @@ class ApiParser {
   // Parses a 'bool' property.
   BooleanProperty parseBooleanProperty(
       String propertyName, ApiProperty metadata) {
-    assert(metadata != null);
     const List<Symbol> extraFields = const [#defaultValue];
     _checkValidFields(propertyName, 'bool', metadata, extraFields);
     if (metadata.defaultValue != null && metadata.defaultValue is! bool) {
@@ -927,24 +940,22 @@ class ApiParser {
 
   // Parses an 'enum' property.
   EnumProperty parseEnumProperty(String propertyName, ApiProperty metadata) {
-    assert(metadata != null);
     const List<Symbol> extraFields = const [#defaultValue, #values];
     _checkValidFields(propertyName, 'Enum', metadata, extraFields);
     var defaultValue = metadata.defaultValue;
     if (defaultValue != null &&
         (defaultValue is! String ||
-            !metadata.values.containsKey(defaultValue))) {
+            !(metadata.values?.containsKey(defaultValue) ?? false))) {
       addError('$propertyName: Default value: $defaultValue must be one of the '
-          'valid enum values: ${metadata.values.keys.toString()}.');
+          'valid enum values: ${metadata.values?.keys.toString() ?? "No valid values"}.');
     }
     return new EnumProperty(propertyName, metadata.description,
-        metadata.required, metadata.defaultValue, metadata.values);
+        metadata.required, metadata.defaultValue, metadata.values ?? {});
   }
 
   // Parses a 'String' property.
   StringProperty parseStringProperty(
       String propertyName, ApiProperty metadata) {
-    assert(metadata != null);
     const List<Symbol> extraFields = const [#defaultValue];
     _checkValidFields(propertyName, 'String', metadata, extraFields);
     if (metadata.defaultValue != null && metadata.defaultValue is! String) {
@@ -958,10 +969,9 @@ class ApiParser {
   // Parses a 'DateTime' property.
   DateTimeProperty parseDateTimeProperty(
       String propertyName, ApiProperty metadata) {
-    assert(metadata != null);
     const List<Symbol> extraFields = const [#defaultValue];
     _checkValidFields(propertyName, 'DateTime', metadata, extraFields);
-    DateTime defaultValue;
+    DateTime? defaultValue;
     if (metadata.defaultValue != null) {
       if (metadata.defaultValue is! String) {
         addError('$propertyName: Default value ${metadata.defaultValue} for a '
@@ -982,15 +992,21 @@ class ApiParser {
   }
 
   // Parses a nested class schema property.
-  SchemaProperty parseSchemaProperty<T>(String propertyName, ApiProperty metadata,
-      ClassMirror schemaTypeMirror, bool isRequest) {
-    assert(metadata != null);
+  SchemaProperty parseSchemaProperty<T>(String propertyName,
+      ApiProperty metadata, ClassMirror schemaTypeMirror, bool isRequest) {
     assert(schemaTypeMirror is ClassMirror && !schemaTypeMirror.isAbstract);
     var propertyTypeName = MirrorSystem.getName(schemaTypeMirror.simpleName);
     _checkValidFields(propertyName, propertyTypeName, metadata, []);
     var schema = parseSchema(schemaTypeMirror, isRequest);
-    ClassMirror schemaProperty = reflectType(SchemaProperty, [schemaTypeMirror.reflectedType]);
-    return schemaProperty.newInstance(const Symbol(''), [propertyName, metadata.description, metadata.required, schema]).reflectee;
+    ClassMirror schemaProperty =
+        reflectType(SchemaProperty, [schemaTypeMirror.reflectedType])
+            as ClassMirror;
+    return schemaProperty.newInstance(const Symbol(''), [
+      propertyName,
+      metadata.description,
+      metadata.required,
+      schema
+    ]).reflectee;
   }
 
   /// Return the type arguments for the given class [T], which is or is a
@@ -998,7 +1014,10 @@ class ApiParser {
   List<TypeMirror> _TypeArgumentsForBaseClass<T>(ClassMirror classMirror) {
     ClassMirror baseClassMirror = reflectClass(T);
     if (classMirror.originalDeclaration != baseClassMirror) {
-      return classMirror.superinterfaces.firstWhere((interface) => interface.originalDeclaration == baseClassMirror).typeArguments;
+      return classMirror.superinterfaces
+          .firstWhere(
+              (interface) => interface.originalDeclaration == baseClassMirror)
+          .typeArguments;
     }
     return classMirror.typeArguments;
   }
@@ -1016,19 +1035,25 @@ class ApiParser {
       listTypeArguments = _TypeArgumentsForBaseClass<List>(listPropertyType);
     }
     assert(listTypeArguments.length == 1);
-    assert(metadata != null);
     var listTypeName = MirrorSystem.getName(listTypeArguments[0].simpleName);
     _checkValidFields(propertyName, 'List<$listTypeName>', metadata, []);
+    // ignore: todo
     // TODO: Figure out what to do about metadata for the items property.
     var listItemsProperty = parseProperty(
         listTypeArguments[0], propertyName, new ApiProperty(), isRequest);
-    ClassMirror listProperty = reflectType(ListProperty, [listTypeArguments.map<Type>((TypeMirror tm) => tm.reflectedType).first]);
-    return listProperty.newInstance(const Symbol(''), [propertyName, metadata.description, metadata.required, listItemsProperty]).reflectee;
+    ClassMirror listProperty = reflectType(ListProperty, [
+      listTypeArguments.map<Type>((TypeMirror tm) => tm.reflectedType).first
+    ]) as ClassMirror;
+    return listProperty.newInstance(const Symbol(''), [
+      propertyName,
+      metadata.description,
+      metadata.required,
+      listItemsProperty
+    ]).reflectee;
   }
 
   MapProperty parseMapProperty(String propertyName, ApiProperty metadata,
       ClassMirror mapPropertyType, bool isRequest) {
-    assert(metadata != null);
     var mapTypeArguments = mapPropertyType.typeArguments;
     assert(mapTypeArguments.length == 2);
     var mapKeyTypeName = MirrorSystem.getName(mapTypeArguments[0].simpleName);
@@ -1038,19 +1063,25 @@ class ApiParser {
     if (mapTypeArguments[0].reflectedType != String) {
       addError('$propertyName: Maps must have keys of type \'String\'.');
     }
+    // ignore: todo
     // TODO: Figure out what to do about metadata for the additional property.
     var additionalProperty = parseProperty(
         mapTypeArguments[1], propertyName, new ApiProperty(), isRequest);
-    ClassMirror mapProperty = reflectType(MapProperty, [mapTypeArguments.map<Type>((TypeMirror tm) => tm.reflectedType).last]);
-    return mapProperty.newInstance(const Symbol(''), [propertyName, metadata.description,
-        metadata.required, additionalProperty]).reflectee;
+    ClassMirror mapProperty = reflectType(MapProperty, [
+      mapTypeArguments.map<Type>((TypeMirror tm) => tm.reflectedType).last
+    ]) as ClassMirror;
+    return mapProperty.newInstance(const Symbol(''), [
+      propertyName,
+      metadata.description,
+      metadata.required,
+      additionalProperty
+    ]).reflectee;
   }
 
   // Helper method to check that a field annotated with an ApiProperty is using
   // only the supported ApiProperty fields.
   void _checkValidFields(String propertyName, String propertyTypeName,
       ApiProperty metadata, List<Symbol> extraFields) {
-    assert(extraFields != null);
     const List<Symbol> commonFields = const [
       #name,
       #description,

@@ -7,26 +7,26 @@ library rpc.media_message;
 /// Special API Message to use when a method returns a Blob.
 class MediaMessage {
   /// Blob data as bytes.
-  List<int> bytes;
+  late List<int> bytes;
 
   /// The creation or modification time of the media. Optional.
-  DateTime updated;
+  DateTime? updated;
 
   /// Content-Type of the object data. Optional.
-  String contentType;
+  String? contentType;
 
   /// Cache-Control directive for the media data. Optional.
-  String cacheControl;
+  String? cacheControl;
 
   /// Content-Encoding of the media data. Optional.
-  String contentEncoding;
+  String? contentEncoding;
 
   /// Content-Type of the media data. Optional.
-  String contentLanguage;
+  String? contentLanguage;
 
   /// MD5 hash of the data; encoded using base64. Optional.
-  String md5Hash;
+  String? md5Hash;
 
   /// User-provided metadata, in key/value pairs. Optional.
-  Map<String, String> metadata;
+  Map<String, String>? metadata;
 }

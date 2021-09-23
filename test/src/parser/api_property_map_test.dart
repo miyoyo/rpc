@@ -2,6 +2,8 @@
 // for details. All rights reserved. Use of this source code is governed by a
 // BSD-style license that can be found in the LICENSE file.
 
+
+
 library api_property_map_tests;
 
 import 'dart:mirrors';
@@ -14,45 +16,45 @@ import 'package:test/test.dart';
 
 // Simple class used as a property type in the below unit tests.
 class SomeClass {
-  int foo;
-  String bar;
+  int? foo;
+  String? bar;
 }
 
 class CorrectMap {
-  Map<String, SomeClass> aMap;
+  Map<String, SomeClass>? aMap;
 
   @ApiProperty(name: 'anotherName', description: 'Description of a Map.')
-  Map<String, SomeClass> aNamedMap;
+  Map<String, SomeClass>? aNamedMap;
 
   @ApiProperty(required: true)
-  Map<String, SomeClass> aRequiredMap;
+  Map<String, SomeClass>? aRequiredMap;
 
   @ApiProperty(required: false)
-  Map<String, SomeClass> anOptionalMap;
+  Map<String, SomeClass>? anOptionalMap;
 
   @ApiProperty(
       name: 'aFullMap', description: 'Description of a Map.', required: true)
-  Map<String, SomeClass> aMapWithAllAnnotations;
+  Map<String, SomeClass>? aMapWithAllAnnotations;
 
   @ApiProperty(ignore: true)
-  Map<String, SomeClass> ignore;
+  Map<String, SomeClass>? ignore;
 }
 
 class WrongMap {
   @ApiProperty(defaultValue: const {'foo': 1, 'bar': 2})
-  Map<String, int> aMapWithDefault;
+  Map<String, int>? aMapWithDefault;
 
   @ApiProperty(minValue: 0, maxValue: 1)
-  Map<String, SomeClass> aMapWithMinMax;
+  Map<String, SomeClass>? aMapWithMinMax;
 
   @ApiProperty(format: 'int32')
-  Map<String, SomeClass> aMapWithFormat;
+  Map<String, SomeClass>? aMapWithFormat;
 
   @ApiProperty(values: const {'enumValue': 'Enum Description'})
-  Map<String, SomeClass> aMapWithEnumValues;
+  Map<String, SomeClass>? aMapWithEnumValues;
 }
 
-final ApiConfigSchema jsonSchema =
+final ApiConfigSchema? jsonSchema =
     new ApiParser().parseSchema(reflectClass(discovery.JsonSchema), false);
 
 void main() {
@@ -60,12 +62,12 @@ void main() {
     test('simple', () {
       var parser = new ApiParser();
       ApiConfigSchema apiSchema =
-          parser.parseSchema(reflectClass(CorrectMap), true);
+          parser.parseSchema(reflectClass(CorrectMap), true)!;
       expect(parser.isValid, isTrue);
       expect(parser.apiSchemas.length, 2);
       expect(parser.apiSchemas['CorrectMap'], apiSchema);
       expect(parser.apiSchemas['SomeClass'], isNotNull);
-      var json = jsonSchema.toResponse(apiSchema.asDiscovery);
+      var json = jsonSchema!.toResponse(apiSchema.asDiscovery);
       var expectedJson = {
         'id': 'CorrectMap',
         'type': 'object',

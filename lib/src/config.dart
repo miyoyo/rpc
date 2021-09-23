@@ -39,7 +39,7 @@ class ParsedHttpApiRequest {
   /// The original request given as input.
   final HttpApiRequest originalRequest;
 
-  final Converter<Object, dynamic> jsonToBytes;
+  final Converter<Object?, dynamic> jsonToBytes;
 
   // The first two segments of the request path is the api name and
   // version. The key is '/name/version'.
@@ -57,12 +57,12 @@ class ParsedHttpApiRequest {
   final Uri methodUri;
 
   // A map from path parameter name to path parameter value.
-  Map<String, String> pathParameters;
+  Map<String, String?> pathParameters = {};
 
   ContentType contentType;
 
   factory ParsedHttpApiRequest(HttpApiRequest request, String apiPrefix,
-      Converter<Object, dynamic> jsonToBytes) {
+      Converter<Object?, dynamic> jsonToBytes) {
     var path = request.uri.path;
     // Get rid of any double '//' in path.
     while (path.contains('//')) path = path.replaceAll('//', '/');
@@ -95,7 +95,7 @@ class ParsedHttpApiRequest {
     var methodKey = '${request.httpMethod}${methodPathSegments.length}';
     var methodUri = Uri.parse(methodPathSegments.join('/'));
 
-    ContentType contentType;
+    late ContentType contentType;
     if (request.headers.containsKey(HttpHeaders.contentTypeHeader)) {
       final header = request.headers[HttpHeaders.contentTypeHeader];
 
@@ -127,9 +127,9 @@ class ParsedHttpApiRequest {
 /// Helper class describing a method parameter.
 class ApiParameter {
   final String name;
-  Symbol symbol;
-  bool isInt;
-  bool isBool;
+  late Symbol symbol;
+  late bool isInt;
+  late bool isBool;
 
   ApiParameter(this.name, ParameterMirror pm) {
     this.symbol = pm.simpleName;

@@ -20,17 +20,6 @@ class CorrectMinimum {}
     description: 'An API used to test the implementation')
 class CorrectFull {}
 
-class WrongNoMetadata {}
-
-@ApiClass()
-class WrongNoVersionMinimum {}
-
-@ApiClass(
-    name: 'testApi',
-    title: 'The Test API',
-    description: 'An API used to test the implementation')
-class WrongNoVersionFull {}
-
 class MessageWithArguments {
   String result1;
   int result2;
@@ -72,12 +61,12 @@ class InvalidMessageWithArgsApi {
   }
 
   @ApiMethod(method: 'POST', path: 'mapRequestWithArgs')
-  VoidMessage mapResultWithArgs(Map<String, MessageWithArguments> msg) {
+  VoidMessage? mapResultWithArgs(Map<String, MessageWithArguments> msg) {
     return null;
   }
 
   @ApiMethod(method: 'POST', path: 'listRequestWithArgs')
-  VoidMessage listResultWithArgs(List<MessageWithArguments> msg) {
+  VoidMessage? listResultWithArgs(List<MessageWithArguments> msg) {
     return null;
   }
 }
@@ -94,7 +83,7 @@ void main() {
       expect(apiCfg.description, 'An API used to test the implementation');
       var discoveryDoc =
           apiCfg.generateDiscoveryDocument('http://localhost:8080', null);
-      var json = discoveryDocSchema.toResponse(discoveryDoc);
+      var json = discoveryDocSchema!.toResponse(discoveryDoc);
       var expectedJson = {
         'kind': 'discovery#restDescription',
         'etag': '59760a6caa0688e9d6ecc50c3a90d923f03a8c3a',
@@ -134,7 +123,7 @@ void main() {
       expect(parser.isValid, isTrue);
       var discoveryDoc =
           apiCfg.generateDiscoveryDocument('http://localhost:8080', null);
-      var json = discoveryDocSchema.toResponse(discoveryDoc);
+      var json = discoveryDocSchema!.toResponse(discoveryDoc);
       var expectedJson = {
         'kind': 'discovery#restDescription',
         'etag': 'a1a0f4e178c4d5f1ab8d0ee2863ba84e9e92ec7b',
@@ -202,45 +191,6 @@ void main() {
   });
 
   group('api-class-wrong', () {
-    test('no-metadata', () {
-      var parser = new ApiParser();
-      parser.parse(new WrongNoMetadata());
-      expect(parser.isValid, isFalse);
-      var expectedErrors = [
-        new ApiConfigError(
-            'WrongNoMetadata: Missing required @ApiClass annotation.'),
-        new ApiConfigError(
-            'WrongNoMetadata: @ApiClass.version field is required.')
-      ];
-      expect(parser.errors.toString(), expectedErrors.toString());
-    });
-
-    test('min-no-version', () {
-      var parser = new ApiParser();
-      parser.parse(new WrongNoVersionMinimum());
-      expect(parser.isValid, isFalse);
-      var expectedErrors = [
-        new ApiConfigError(
-            'WrongNoVersionMinimum: @ApiClass.version field is required.')
-      ];
-      expect(parser.errors.toString(), expectedErrors.toString());
-    });
-
-    test('full-no-version', () {
-      var parser = new ApiParser();
-      ApiConfig apiCfg = parser.parse(new WrongNoVersionFull());
-      expect(apiCfg.name, 'testApi');
-      expect(apiCfg.version, isNull);
-      expect(apiCfg.title, 'The Test API');
-      expect(apiCfg.description, 'An API used to test the implementation');
-      expect(parser.isValid, isFalse);
-      var expectedErrors = [
-        new ApiConfigError(
-            'WrongNoVersionFull: @ApiClass.version field is required.')
-      ];
-      expect(parser.errors.toString(), expectedErrors.toString());
-    });
-
     test('request-with-args', () {
       var parser = new ApiParser();
       parser.parse(new InvalidMessageWithArgsApi());

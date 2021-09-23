@@ -2,6 +2,8 @@
 // for details. All rights reserved. Use of this source code is governed by a
 // BSD-style license that can be found in the LICENSE file.
 
+
+
 library api_schema_tests;
 
 import 'dart:collection';
@@ -16,11 +18,11 @@ import 'package:test/test.dart';
 import '../test_api/messages2.dart' as messages2;
 
 class CorrectSimple {
-  String aString;
-  int anInt;
-  bool aBool;
-  double aDouble;
-  DateTime aDate;
+  String? aString;
+  int? anInt;
+  bool? aBool;
+  double? aDouble;
+  DateTime? aDate;
 }
 
 class CorrectModifiers {
@@ -36,11 +38,11 @@ class CorrectModifiers {
   static const String aConstString = 'constantFoo';
 
   // Private fields also do _not_ become part of the message.
-  String _aString;
-  int _anInt;
-  bool _aBool;
-  double _aDouble;
-  DateTime _aDate;
+  String? _aString;
+  int? _anInt;
+  bool? _aBool;
+  double? _aDouble;
+  DateTime? _aDate;
 
   // public method which uses private members
   // eliminates analyzer warning about unused private members
@@ -48,43 +50,43 @@ class CorrectModifiers {
 }
 
 class CorrectContainers {
-  List<String> aStringList;
-  List<int> anIntList;
-  List<bool> aBoolList;
-  List<double> aDoubleList;
-  List<DateTime> aDateList;
-  List<Nested> aNestedList;
+  List<String>? aStringList;
+  List<int>? anIntList;
+  List<bool>? aBoolList;
+  List<double>? aDoubleList;
+  List<DateTime>? aDateList;
+  List<Nested>? aNestedList;
 
-  Map<String, String> aStringMap;
-  Map<String, int> anIntMap;
-  Map<String, bool> aBoolMap;
-  Map<String, double> aDoubleMap;
-  Map<String, DateTime> aDateMap;
-  Map<String, Nested> aNestedMap;
+  Map<String, String>? aStringMap;
+  Map<String, int>? anIntMap;
+  Map<String, bool>? aBoolMap;
+  Map<String, double>? aDoubleMap;
+  Map<String, DateTime>? aDateMap;
+  Map<String, Nested>? aNestedMap;
 }
 
 class CorrectNested {
-  int anInt;
-  Nested aNestedClass;
+  int? anInt;
+  Nested? aNestedClass;
 }
 
 class Nested {
-  String aString;
+  String? aString;
 }
 
 class CorrectRecursive {
-  String message;
-  CorrectRecursive item;
+  String? message;
+  CorrectRecursive? item;
 }
 
 class CorrectIndirectRecursive {
-  String message;
-  IndirectRecursive item;
+  String? message;
+  IndirectRecursive? item;
 }
 
 class IndirectRecursive {
-  String message;
-  CorrectIndirectRecursive item;
+  String? message;
+  CorrectIndirectRecursive? item;
 }
 
 class WrongSimple {
@@ -92,54 +94,54 @@ class WrongSimple {
   var anUntyped;
 
   // The 'num' type is not supported. Use either 'int' or 'double'.
-  num aNumber;
+  num? aNumber;
 
   WrongSimple.named();
 }
 
 // Set and Queue are not supported collections.
 class WrongContainers {
-  Set<String> aStringSet;
-  Set<int> anIntSet;
-  Set<bool> aBoolSet;
-  Set<double> aDoubleSet;
-  Set<DateTime> aDateSet;
-  Set<Nested> aNestedSet;
+  Set<String>? aStringSet;
+  Set<int>? anIntSet;
+  Set<bool>? aBoolSet;
+  Set<double>? aDoubleSet;
+  Set<DateTime>? aDateSet;
+  Set<Nested>? aNestedSet;
 
-  Queue<String> aStringQueue;
-  Queue<int> anIntQueue;
-  Queue<bool> aBoolQueue;
-  Queue<double> aDoubleQueue;
-  Queue<DateTime> aDateQueue;
-  Queue<Nested> aNestedQueue;
+  Queue<String>? aStringQueue;
+  Queue<int>? anIntQueue;
+  Queue<bool>? aBoolQueue;
+  Queue<double>? aDoubleQueue;
+  Queue<DateTime>? aDateQueue;
+  Queue<Nested>? aNestedQueue;
 
-  Map<int, String> aMapWithIntKey;
-  Map<dynamic, String> aMapWithDynamicKey;
-  Map<Nested, String> aMapWithNestedKey;
+  Map<int, String>? aMapWithIntKey;
+  Map<dynamic, String>? aMapWithDynamicKey;
+  Map<Nested, String>? aMapWithNestedKey;
 }
 
 // Schema which conflicts with similar named schema class from another library.
 // Specifically messages2.WrongConflictingWithOther in
 // test/src/test_api/messages2.dart.
 class WrongConflictingWithOther {
-  String aString;
+  String? aString;
 }
 
 @ApiClass(version: 'v1')
 class WrongConflictingApi {
   @ApiMethod(method: 'POST', path: 'conflicting1')
-  WrongConflictingWithOther conflicting1(WrongConflictingWithOther msg) {
+  WrongConflictingWithOther? conflicting1(WrongConflictingWithOther msg) {
     return null;
   }
 
   @ApiMethod(method: 'POST', path: 'conflicting2')
-  messages2.WrongConflictingWithOther conflicting2(
+  messages2.WrongConflictingWithOther? conflicting2(
       messages2.WrongConflictingWithOther msg) {
     return null;
   }
 }
 
-final ApiConfigSchema jsonSchema =
+final ApiConfigSchema? jsonSchema =
     new ApiParser().parseSchema(reflectClass(discovery.JsonSchema), false);
 
 void main() {
@@ -147,11 +149,11 @@ void main() {
     test('simple', () {
       var parser = new ApiParser();
       ApiConfigSchema apiSchema =
-          parser.parseSchema(reflectClass(CorrectSimple), true);
+          parser.parseSchema(reflectClass(CorrectSimple), true)!;
       expect(parser.isValid, isTrue);
       expect(parser.apiSchemas.length, 1);
       expect(parser.apiSchemas['CorrectSimple'], apiSchema);
-      var json = jsonSchema.toResponse(apiSchema.asDiscovery);
+      var json = jsonSchema!.toResponse(apiSchema.asDiscovery);
       var expectedJson = {
         'id': 'CorrectSimple',
         'type': 'object',
@@ -169,11 +171,11 @@ void main() {
     test('modifiers', () {
       var parser = new ApiParser();
       ApiConfigSchema apiSchema =
-          parser.parseSchema(reflectClass(CorrectModifiers), true);
+          parser.parseSchema(reflectClass(CorrectModifiers), true)!;
       expect(parser.isValid, isTrue);
       expect(parser.apiSchemas.length, 1);
       expect(parser.apiSchemas['CorrectModifiers'], apiSchema);
-      var json = jsonSchema.toResponse(apiSchema.asDiscovery);
+      var json = jsonSchema!.toResponse(apiSchema.asDiscovery);
       var expectedJson = {
         'id': 'CorrectModifiers',
         'type': 'object',
@@ -191,12 +193,12 @@ void main() {
     test('containers', () {
       var parser = new ApiParser();
       ApiConfigSchema apiSchema =
-          parser.parseSchema(reflectClass(CorrectContainers), true);
+          parser.parseSchema(reflectClass(CorrectContainers), true)!;
       expect(parser.isValid, isTrue);
       expect(parser.apiSchemas.length, 2);
       expect(parser.apiSchemas['CorrectContainers'], apiSchema);
       expect(parser.apiSchemas['Nested'], isNotNull);
-      var json = jsonSchema.toResponse(apiSchema.asDiscovery);
+      var json = jsonSchema!.toResponse(apiSchema.asDiscovery);
       var expectedJson = {
         'id': 'CorrectContainers',
         'type': 'object',
@@ -257,11 +259,11 @@ void main() {
     test('nested', () {
       var parser = new ApiParser();
       ApiConfigSchema correctNestedSchema =
-          parser.parseSchema(reflectClass(CorrectNested), true);
+          parser.parseSchema(reflectClass(CorrectNested), true)!;
       expect(parser.isValid, isTrue);
       expect(parser.apiSchemas.length, 2);
       expect(parser.apiSchemas['CorrectNested'], correctNestedSchema);
-      var json = jsonSchema.toResponse(correctNestedSchema.asDiscovery);
+      var json = jsonSchema!.toResponse(correctNestedSchema.asDiscovery);
       var expectedJson = {
         'id': 'CorrectNested',
         'type': 'object',
@@ -272,9 +274,9 @@ void main() {
       };
       expect(json, expectedJson);
       // Check the nested class
-      var nestedSchema = parser.apiSchemas['Nested'];
+      var nestedSchema = parser.apiSchemas['Nested']!;
       expect(nestedSchema, isNotNull);
-      json = jsonSchema.toResponse(nestedSchema.asDiscovery);
+      json = jsonSchema!.toResponse(nestedSchema.asDiscovery);
       expectedJson = {
         'id': 'Nested',
         'type': 'object',
@@ -288,9 +290,9 @@ void main() {
     test('recursive', () {
       var parser = new ApiParser();
       ApiConfigSchema apiSchema =
-          parser.parseSchema(reflectClass(CorrectRecursive), true);
+          parser.parseSchema(reflectClass(CorrectRecursive), true)!;
       expect(parser.isValid, isTrue);
-      var json = jsonSchema.toResponse(apiSchema.asDiscovery);
+      var json = jsonSchema!.toResponse(apiSchema.asDiscovery);
       var expectedJson = {
         'id': 'CorrectRecursive',
         'type': 'object',
@@ -305,10 +307,10 @@ void main() {
     test('indirect-recursive', () {
       var parser = new ApiParser();
       ApiConfigSchema apiSchema =
-          parser.parseSchema(reflectClass(CorrectIndirectRecursive), true);
+          parser.parseSchema(reflectClass(CorrectIndirectRecursive), true)!;
       expect(parser.isValid, isTrue);
       expect(parser.apiSchemas.length, 2);
-      var json = jsonSchema.toResponse(apiSchema.asDiscovery);
+      var json = jsonSchema!.toResponse(apiSchema.asDiscovery);
       var expectedJson = {
         'id': 'CorrectIndirectRecursive',
         'type': 'object',

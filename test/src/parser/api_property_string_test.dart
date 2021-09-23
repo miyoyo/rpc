@@ -2,6 +2,8 @@
 // for details. All rights reserved. Use of this source code is governed by a
 // BSD-style license that can be found in the LICENSE file.
 
+
+
 library api_property_string_tests;
 
 import 'dart:mirrors';
@@ -13,40 +15,40 @@ import 'package:rpc/src/discovery/config.dart' as discovery;
 import 'package:test/test.dart';
 
 class CorrectString {
-  String aString;
+  String? aString;
 
   @ApiProperty(name: 'anotherName', description: 'Description of a String.')
-  String aNamedString;
+  String? aNamedString;
 
   @ApiProperty(defaultValue: 'foo')
-  String aStringWithDefault;
+  String? aStringWithDefault;
 
   @ApiProperty(required: true)
-  String aRequiredString;
+  String? aRequiredString;
 
   @ApiProperty(required: false)
-  String anOptionalString;
+  String? anOptionalString;
 
   @ApiProperty(
       name: 'aFullString',
       description: 'Description of a String.',
       required: true,
       defaultValue: 'foo')
-  String aStringWithAllAnnotations;
+  String? aStringWithAllAnnotations;
 
   @ApiProperty(ignore: true)
-  String ignored;
+  String? ignored;
 }
 
 class WrongString {
   @ApiProperty(minValue: 0, maxValue: 1)
-  String aStringWithMinMax;
+  String? aStringWithMinMax;
 
   @ApiProperty(format: 'int32')
-  String aStringWithFormat;
+  String? aStringWithFormat;
 }
 
-final ApiConfigSchema jsonSchema =
+final ApiConfigSchema? jsonSchema =
     new ApiParser().parseSchema(reflectClass(discovery.JsonSchema), false);
 
 void main() {
@@ -54,11 +56,11 @@ void main() {
     test('simple', () {
       var parser = new ApiParser();
       ApiConfigSchema apiSchema =
-          parser.parseSchema(reflectClass(CorrectString), true);
+          parser.parseSchema(reflectClass(CorrectString), true)!;
       expect(parser.isValid, isTrue);
       expect(parser.apiSchemas.length, 1);
       expect(parser.apiSchemas['CorrectString'], apiSchema);
-      var json = jsonSchema.toResponse(apiSchema.asDiscovery);
+      var json = jsonSchema!.toResponse(apiSchema.asDiscovery);
       var expectedJson = {
         'id': 'CorrectString',
         'type': 'object',

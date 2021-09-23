@@ -34,11 +34,11 @@ class HttpApiRequest {
   final Stream<List<int>> body;
 
   // Request cookies (optional). Not supported with shelf_rpc.
-  final List<Cookie> cookies;
+  final List<Cookie>? cookies;
 
   factory HttpApiRequest(String httpMethod, Uri uri,
       Map<String, dynamic> headers, Stream<List<int>> body,
-      {List<Cookie> cookies}) {
+      {List<Cookie>? cookies}) {
     var headersLowerCase = new Map<String, dynamic>();
     headers.forEach((String key, dynamic value) =>
         headersLowerCase[key.toLowerCase()] = value);
@@ -78,24 +78,22 @@ class HttpApiResponse {
   final Map<String, dynamic> headers;
 
   /// Response body containing the result of a request.
-  final Stream<List<int>> body;
+  final Stream<List<int>>? body;
 
   /// Holds any exception resulting from a failed request.
   /// The exception is stored to allow the application server to log the error
   /// and/or return back more information about the failure to the client.
-  final Exception exception;
+  final Exception? exception;
 
   /// Holds a stacktrace if passed via constructor.
-  final StackTrace stack;
+  final StackTrace? stack;
 
   HttpApiResponse(this.status, this.body, this.headers,
-      {this.exception, this.stack}) {
-    assert(headers != null);
-  }
+      {this.exception, this.stack});
 
   factory HttpApiResponse.error(
-      int status, String message, Exception exception, StackTrace stack,
-      {List<RpcErrorDetail> errors}) {
+      int status, String message, Exception? exception, StackTrace? stack,
+      {List<RpcErrorDetail>? errors}) {
     Map json = {
       'error': {'code': status, 'message': message}
     };

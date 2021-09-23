@@ -2,6 +2,8 @@
 // for details. All rights reserved. Use of this source code is governed by a
 // BSD-style license that can be found in the LICENSE file.
 
+
+
 library api_delete_method_tests;
 
 import 'package:rpc/rpc.dart';
@@ -13,12 +15,12 @@ import 'package:test/test.dart';
 @ApiClass(version: 'v1')
 class CorrectDeleteApi {
   @ApiMethod(method: 'DELETE', path: 'minimumDelete')
-  VoidMessage minimumDelete() {
+  VoidMessage? minimumDelete() {
     return null;
   }
 
   @ApiMethod(name: 'namedDelete', method: 'DELETE', path: 'namedDelete')
-  VoidMessage namedDelete() {
+  VoidMessage? namedDelete() {
     return null;
   }
 
@@ -27,7 +29,7 @@ class CorrectDeleteApi {
       method: 'DELETE',
       path: 'fullDelete',
       description: 'A method with all annotations set')
-  VoidMessage fullDelete() {
+  VoidMessage? fullDelete() {
     return null;
   }
 }
@@ -35,47 +37,47 @@ class CorrectDeleteApi {
 @ApiClass(version: 'v1')
 class CorrectDeleteApiWithPath {
   @ApiMethod(method: 'DELETE', path: 'deleteWithString/{aString}')
-  VoidMessage deleteWithString(String aString) {
+  VoidMessage? deleteWithString(String aString) {
     return null;
   }
 
   @ApiMethod(method: 'DELETE', path: 'deleteWithInt/{anInt}')
-  VoidMessage deleteWithInt(int anInt) {
+  VoidMessage? deleteWithInt(int anInt) {
     return null;
   }
 
   @ApiMethod(method: 'DELETE', path: 'deleteWithStringInt/{aString}/{anInt}')
-  VoidMessage deleteWithStringInt(String aString, int anInt) {
+  VoidMessage? deleteWithStringInt(String aString, int anInt) {
     return null;
   }
 
   @ApiMethod(method: 'DELETE', path: 'deleteWithIntString/{anInt}/{aString}')
-  VoidMessage deleteWithIntString(String anInt, int aString) {
+  VoidMessage? deleteWithIntString(String anInt, int aString) {
     return null;
   }
 
   @ApiMethod(
       method: 'DELETE', path: 'deleteWithStringString/{aString1}/{aString2}')
-  VoidMessage deleteWithStringString(String aString1, String aString2) {
+  VoidMessage? deleteWithStringString(String aString1, String aString2) {
     return null;
   }
 
   @ApiMethod(method: 'DELETE', path: 'deleteWithIntInt/{anInt1}/{anInt2}')
-  VoidMessage deleteWithIntInt(int anInt1, int anInt2) {
+  VoidMessage? deleteWithIntInt(int anInt1, int anInt2) {
     return null;
   }
 
   @ApiMethod(
       method: 'DELETE',
       path: 'deleteWithIntKeywordInt/{anInt1}/keyword/{anInt2}')
-  VoidMessage deleteWithIntKeywordInt(int anInt1, int anInt2) {
+  VoidMessage? deleteWithIntKeywordInt(int anInt1, int anInt2) {
     return null;
   }
 
   @ApiMethod(
       method: 'DELETE',
       path: 'deleteWithStringKeywordString/{aString1}/keyword/{aString2}')
-  VoidMessage deleteWithStringKeywordString(String aString1, String aString2) {
+  VoidMessage? deleteWithStringKeywordString(String aString1, String aString2) {
     return null;
   }
 }
@@ -83,52 +85,52 @@ class CorrectDeleteApiWithPath {
 @ApiClass(version: 'v1')
 class CorrectDeleteApiWithQuery {
   @ApiMethod(method: 'DELETE', path: 'query1')
-  VoidMessage query1({String name}) {
+  VoidMessage? query1({String? name}) {
     return null;
   }
 
   @ApiMethod(method: 'DELETE', path: 'query2')
-  VoidMessage query2({String qp1, String qp2}) {
+  VoidMessage? query2({String? qp1, String? qp2}) {
     return null;
   }
 
   @ApiMethod(method: 'DELETE', path: 'query3')
-  VoidMessage query3({int qp}) {
+  VoidMessage? query3({int? qp}) {
     return null;
   }
 
   @ApiMethod(method: 'DELETE', path: 'query4')
-  VoidMessage query4({String qp1, int qp2}) {
+  VoidMessage? query4({String? qp1, int? qp2}) {
     return null;
   }
 
   @ApiMethod(method: 'DELETE', path: 'query5')
-  VoidMessage query5({int qp1, String qp2}) {
+  VoidMessage? query5({int? qp1, String? qp2}) {
     return null;
   }
 
   @ApiMethod(method: 'DELETE', path: 'query6')
-  VoidMessage query6({int qp1, int qp2}) {
+  VoidMessage? query6({int? qp1, int? qp2}) {
     return null;
   }
 
   @ApiMethod(method: 'DELETE', path: 'query7/{pathParam}')
-  VoidMessage query7(int pathParam, {int queryParam}) {
+  VoidMessage? query7(int pathParam, {int? queryParam}) {
     return null;
   }
 
   @ApiMethod(method: 'DELETE', path: 'query8/{pathParam}')
-  VoidMessage query8(String pathParam, {String queryParam}) {
+  VoidMessage? query8(String pathParam, {String? queryParam}) {
     return null;
   }
 
   @ApiMethod(method: 'DELETE', path: 'query9/{pathParam}')
-  VoidMessage query9(int pathParam, {String queryParam}) {
+  VoidMessage? query9(int pathParam, {String? queryParam}) {
     return null;
   }
 
   @ApiMethod(method: 'DELETE', path: 'query10/{pathParam}')
-  VoidMessage query10(String pathParam, {int queryParam}) {
+  VoidMessage? query10(String pathParam, {int? queryParam}) {
     return null;
   }
 }
@@ -137,7 +139,7 @@ class CorrectDeleteApiWithQuery {
 // they are not specific to DELETE.
 class WrongDeleteApi {
   @ApiMethod(method: 'DELETE', path: 'deleteWithMessageArg')
-  VoidMessage deleteWithMessageArg(VoidMessage requestMessage) {
+  VoidMessage? deleteWithMessageArg(VoidMessage requestMessage) {
     return null;
   }
 }
@@ -145,27 +147,27 @@ class WrongDeleteApi {
 @ApiClass(version: 'v1test')
 class WrongDeleteApiWithPathQuery {
   @ApiMethod(method: 'DELETE', path: 'query1')
-  VoidMessage query1(String path) {
+  VoidMessage? query1(String path) {
     return null;
   }
 
   @ApiMethod(method: 'DELETE', path: 'query2/{queryParam}')
-  VoidMessage query2(String pathParam, {String queryParam}) {
+  VoidMessage? query2(String pathParam, {String? queryParam}) {
     return null;
   }
 
   @ApiMethod(method: 'DELETE', path: 'query3')
-  VoidMessage query3({queryParam}) {
+  VoidMessage? query3({queryParam}) {
     return null;
   }
 
   @ApiMethod(method: 'DELETE', path: 'query4/{queryParam}')
-  VoidMessage query4({String queryParam}) {
+  VoidMessage? query4({String? queryParam}) {
     return null;
   }
 
   @ApiMethod(method: 'DELETE', path: 'query5')
-  VoidMessage query5([String queryParam]) {
+  VoidMessage? query5([String? queryParam]) {
     return null;
   }
 }
@@ -179,7 +181,7 @@ void main() {
       expect(apiCfg.methods.length, 3);
       var discoveryDoc =
           apiCfg.generateDiscoveryDocument('http://localhost:8080', null);
-      var json = discoveryDocSchema.toResponse(discoveryDoc);
+      var json = discoveryDocSchema!.toResponse(discoveryDoc);
       var expectedMethods = {
         'minimumDelete': {
           'id': 'CorrectDeleteApi.minimumDelete',
@@ -215,7 +217,7 @@ void main() {
       expect(apiCfg.methods.length, 8);
       var discoveryDoc =
           apiCfg.generateDiscoveryDocument('http://localhost:8080', null);
-      var json = discoveryDocSchema.toResponse(discoveryDoc);
+      var json = discoveryDocSchema!.toResponse(discoveryDoc);
       var expectedMethods = {
         'deleteWithString': {
           'id': 'CorrectDeleteApiWithPath.deleteWithString',
@@ -377,7 +379,7 @@ void main() {
       expect(apiCfg.methods.length, 10);
       var discoveryDoc =
           apiCfg.generateDiscoveryDocument('http://localhost:8080', null);
-      var json = discoveryDocSchema.toResponse(discoveryDoc);
+      var json = discoveryDocSchema!.toResponse(discoveryDoc);
       var expectedMethods = {
         'query1': {
           'id': 'CorrectDeleteApiWithQuery.query1',

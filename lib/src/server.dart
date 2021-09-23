@@ -21,13 +21,13 @@ typedef Future HttpRequestHandler(io.HttpRequest request);
 /// The main class for handling all API requests.
 class ApiServer {
   final String _apiPrefix;
-  String _discoveryApiKey;
+  String? _discoveryApiKey;
 
-  Converter<Object, dynamic> _jsonToBytes;
+  late Converter<Object?, dynamic> _jsonToBytes;
 
   final Map<String, ApiConfig> _apis = {};
 
-  ApiServer({String apiPrefix, bool prettyPrint: false})
+  ApiServer({String? apiPrefix, bool prettyPrint: false})
       : _apiPrefix = apiPrefix != null ? apiPrefix : '' {
     _jsonToBytes = prettyPrint
         ? new JsonEncoder.withIndent(' ').fuse(utf8.encoder)
@@ -54,6 +54,9 @@ class ApiServer {
           if (exception is Error) {
             exception = new Exception(exception.toString());
           }
+
+          exception as Exception;
+
           apiResponse = new HttpApiResponse.error(
               io.HttpStatus.internalServerError,
               exception.toString(),
@@ -72,7 +75,7 @@ class ApiServer {
     }
     if (!parser.isValid) {
       throw new ApiConfigError('RPC: Failed to parse API.\n\n'
-          '${apiConfig.apiKey}:\n' +
+              '${apiConfig.apiKey}:\n' +
           parser.errors.join('\n') +
           '\n');
     }
@@ -109,7 +112,7 @@ class ApiServer {
           new ParsedHttpApiRequest(request, _apiPrefix, _jsonToBytes);
 
       // The api key is the first two path segments.
-      ApiConfig api = _apis[parsedRequest.apiKey];
+      ApiConfig? api = _apis[parsedRequest.apiKey];
       if (api == null) {
         return httpErrorResponse(request,
             new NotFoundError('No API with key: ${parsedRequest.apiKey}.'));
@@ -132,6 +135,9 @@ class ApiServer {
       if (exception is Error) {
         exception = new Exception(e.toString());
       }
+
+      exception as Exception;
+
       response = httpErrorResponse(request, exception,
           stack: stack, drainRequest: drain);
     }
@@ -183,7 +189,7 @@ Future sendApiResponse(HttpApiResponse apiResponse, io.HttpResponse response) {
   apiResponse.headers
       .forEach((name, value) => response.headers.add(name, value));
   if (apiResponse.body != null) {
-    return apiResponse.body.pipe(response);
+    return apiResponse.body!.pipe(response);
   } else {
     return response.close();
   }

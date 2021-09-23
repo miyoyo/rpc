@@ -2,6 +2,8 @@
 // for details. All rights reserved. Use of this source code is governed by a
 // BSD-style license that can be found in the LICENSE file.
 
+
+
 library api_property_bool_tests;
 
 import 'dart:mirrors';
@@ -13,33 +15,33 @@ import 'package:rpc/src/discovery/config.dart' as discovery;
 import 'package:test/test.dart';
 
 class CorrectBool {
-  bool aBool;
+  bool? aBool;
 
   @ApiProperty(name: 'anotherName', description: 'Description of a bool.')
-  bool aNamedBool;
+  bool? aNamedBool;
 
   @ApiProperty(defaultValue: true)
-  bool aBoolWithDefault;
+  bool? aBoolWithDefault;
 
   @ApiProperty(required: true)
-  bool aRequiredBool;
+  bool? aRequiredBool;
 
   @ApiProperty(ignore: true)
-  bool ignored;
+  bool? ignored;
 }
 
 class WrongBool {
   @ApiProperty(minValue: 0, maxValue: 1)
-  bool aBoolWithMinMax;
+  bool? aBoolWithMinMax;
 
   @ApiProperty(format: 'int32')
-  bool aBoolWithFormat;
+  bool? aBoolWithFormat;
 
   @ApiProperty(values: const {'enumKey': 'enumValue'})
-  bool aBoolWithEnumValues;
+  bool? aBoolWithEnumValues;
 }
 
-final ApiConfigSchema jsonSchema =
+final ApiConfigSchema? jsonSchema =
     new ApiParser().parseSchema(reflectClass(discovery.JsonSchema), false);
 
 void main() {
@@ -47,11 +49,11 @@ void main() {
     test('simple', () {
       var parser = new ApiParser();
       ApiConfigSchema apiSchema =
-          parser.parseSchema(reflectClass(CorrectBool), true);
+          parser.parseSchema(reflectClass(CorrectBool), true)!;
       expect(parser.isValid, isTrue);
       expect(parser.apiSchemas.length, 1);
       expect(parser.apiSchemas['CorrectBool'], apiSchema);
-      var json = jsonSchema.toResponse(apiSchema.asDiscovery);
+      var json = jsonSchema!.toResponse(apiSchema.asDiscovery);
       var expectedJson = {
         'id': 'CorrectBool',
         'type': 'object',

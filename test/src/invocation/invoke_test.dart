@@ -2,6 +2,8 @@
 // for details. All rights reserved. Use of this source code is governed by a
 // BSD-style license that can be found in the LICENSE file.
 
+
+
 library api_invoke_tests;
 
 import 'dart:async';
@@ -26,29 +28,29 @@ File _blobFile() {
 // Tests for exercising the setting of default values
 class DefaultValueMessage {
   @ApiProperty(defaultValue: 5)
-  int anInt;
+  int? anInt;
 
   @ApiProperty(defaultValue: true)
-  bool aBool;
+  bool? aBool;
 
   @ApiProperty(defaultValue: 4.2)
-  double aDouble;
+  double? aDouble;
 
   @ApiProperty(defaultValue: '1969-07-20T20:18:00.000Z')
-  DateTime aDate;
+  DateTime? aDate;
 
   @ApiProperty(defaultValue: 'Hello World!')
-  String aString;
+  String? aString;
 
   @ApiProperty(values: const {
     'enum_value1': 'Description of enum_value1',
     'enum_value2': 'Description of enum_value2',
     'enum_value3': 'Description of enum_value3'
   }, defaultValue: 'enum_value2')
-  String anEnum;
+  String? anEnum;
 
   @ApiProperty(ignore: true)
-  Type ignoredProperty;
+  Type? ignoredProperty;
 }
 
 const _expectedDefaultResult = const {
@@ -62,20 +64,20 @@ const _expectedDefaultResult = const {
 
 class MinMaxIntMessage {
   @ApiProperty(minValue: 0, maxValue: 10)
-  int aBoundedInt;
+  late int aBoundedInt;
 }
 
 class Int32Message {
-  int anInt;
+  int? anInt;
 }
 
 class Int64Message {
   @ApiProperty(format: 'int64')
-  BigInt anInt;
+  BigInt? anInt;
 }
 
 class StringMessage {
-  String aString;
+  String? aString;
 }
 
 class InheritanceBaseClass {
@@ -108,7 +110,7 @@ class TestAPI {
 
 class GetAPI {
   @ApiMethod(path: 'get/simple')
-  VoidMessage getSimple() {
+  VoidMessage? getSimple() {
     return null;
   }
 
@@ -129,12 +131,12 @@ class GetAPI {
 
   // This should always fail since a method is not allowed to return null.
   @ApiMethod(path: 'get/null')
-  StringMessage getNull() {
+  StringMessage? getNull() {
     return null;
   }
 
   @ApiMethod(path: 'get/hello')
-  StringMessage getHello({String name}) {
+  StringMessage getHello({String? name}) {
     return new StringMessage()
       ..aString = 'Hello ' + (name != null ? name : 'Ghost');
   }
@@ -160,19 +162,19 @@ class GetAPI {
   }
 
   @ApiMethod(path: 'get/response')
-  VoidMessage getResponse() {
-    context.responseStatusCode = HttpStatus.found;
-    context.responseHeaders['Location'] = 'http://some-other-url';
+  VoidMessage? getResponse() {
+    context!.responseStatusCode = HttpStatus.found;
+    context!.responseHeaders['Location'] = 'http://some-other-url';
     return null;
   }
 
   @ApiMethod(path: 'get/withCookies')
   Future<StringMessage> getWithCookies() async {
-    if (context.requestCookies == null) {
+    if (context!.requestCookies == null) {
       throw new BadRequestError('missing cookies');
     }
     return new StringMessage()
-      ..aString = 'Received cookies: ${context.requestCookies}';
+      ..aString = 'Received cookies: ${context!.requestCookies}';
   }
 
   @ApiMethod(path: 'get/blob')
@@ -217,7 +219,7 @@ class GetAPI {
 
 class DeleteAPI {
   @ApiMethod(method: 'DELETE', path: 'delete/simple')
-  VoidMessage deleteSimple() {
+  VoidMessage? deleteSimple() {
     return null;
   }
 }
@@ -248,17 +250,17 @@ class PostAPI {
     assert(existingResources != null);
     existingResources[resource] = id;
     // Set the HTTP response's status code to 201 (Created).
-    context.responseStatusCode = HttpStatus.created;
+    context!.responseStatusCode = HttpStatus.created;
     return existingResources;
   }
 
   // Method used to test response status code override and response headers.
   @ApiMethod(method: 'POST', path: 'post/response')
   DefaultValueMessage responsePost(DefaultValueMessage message) {
-    context.responseStatusCode = HttpStatus.accepted;
-    context.responseHeaders['Content-type'] = 'contentType1';
-    context.responseHeaders['content-Type'] = 'contentType2';
-    context.responseHeaders['my-Own-header'] = 'aHeaderValue';
+    context!.responseStatusCode = HttpStatus.accepted;
+    context!.responseHeaders['Content-type'] = 'contentType1';
+    context!.responseHeaders['content-Type'] = 'contentType2';
+    context!.responseHeaders['my-Own-header'] = 'aHeaderValue';
     return message;
   }
 
@@ -292,7 +294,7 @@ main() async {
       extraHeaders: const <String, dynamic>{},
       String query: '',
       body,
-      List<Cookie> cookies}) {
+      List<Cookie>? cookies}) {
     var headers = <String, dynamic>{'content-type': 'application/json'};
     headers.addAll(extraHeaders);
     var bodyStream;
@@ -310,7 +312,7 @@ main() async {
     return _apiServer.handleHttpApiRequest(request);
   }
 
-  Future _decodeBody(Stream<List<int>> body) async {
+  Future _decodeBody(Stream<List<int>>? body) async {
     if (body == null) return null;
     List<List<int>> content = await body.toList();
     assert(content.length == 1);
@@ -496,7 +498,7 @@ main() async {
       final file = _blobFile();
       expect(response.headers[HttpHeaders.lastModifiedHeader],
           formatHttpDate(file.lastModifiedSync()));
-      final bytes = await response.body.toList();
+      final bytes = await response.body!.toList();
       expect(file.readAsBytesSync(), bytes[0]);
     });
 

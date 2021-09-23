@@ -2,6 +2,8 @@
 // for details. All rights reserved. Use of this source code is governed by a
 // BSD-style license that can be found in the LICENSE file.
 
+
+
 library api_property_list_tests;
 
 import 'dart:mirrors';
@@ -14,45 +16,45 @@ import 'package:test/test.dart';
 
 // Simple class used as a property type in the below unit tests.
 class SomeClass {
-  int foo;
-  String bar;
+  int? foo;
+  String? bar;
 }
 
 class CorrectList {
-  List<SomeClass> aList;
+  List<SomeClass>? aList;
 
   @ApiProperty(name: 'anotherName', description: 'Description of a List.')
-  List<SomeClass> aNamedList;
+  List<SomeClass>? aNamedList;
 
   @ApiProperty(required: true)
-  List<SomeClass> aRequiredList;
+  List<SomeClass>? aRequiredList;
 
   @ApiProperty(required: false)
-  List<SomeClass> anOptionalList;
+  List<SomeClass>? anOptionalList;
 
   @ApiProperty(
       name: 'aFullList', description: 'Description of a List.', required: true)
-  List<SomeClass> aListWithAllAnnotations;
+  List<SomeClass>? aListWithAllAnnotations;
 
   @ApiProperty(ignore: true)
-  List<SomeClass> ignored;
+  List<SomeClass>? ignored;
 }
 
 class WrongList {
   @ApiProperty(defaultValue: const [1, 2])
-  List<int> aListWithDefault;
+  List<int>? aListWithDefault;
 
   @ApiProperty(minValue: 0, maxValue: 1)
-  List<SomeClass> aListWithMinMax;
+  List<SomeClass>? aListWithMinMax;
 
   @ApiProperty(format: 'int32')
-  List<SomeClass> aListWithFormat;
+  List<SomeClass>? aListWithFormat;
 
   @ApiProperty(values: const {'enumValue': 'Enum Description'})
-  List<SomeClass> aListWithEnumValues;
+  List<SomeClass>? aListWithEnumValues;
 }
 
-final ApiConfigSchema jsonSchema =
+final ApiConfigSchema? jsonSchema =
     new ApiParser().parseSchema(reflectClass(discovery.JsonSchema), false);
 
 void main() {
@@ -60,12 +62,12 @@ void main() {
     test('simple', () {
       var parser = new ApiParser();
       ApiConfigSchema apiSchema =
-          parser.parseSchema(reflectClass(CorrectList), true);
+          parser.parseSchema(reflectClass(CorrectList), true)!;
       expect(parser.isValid, isTrue);
       expect(parser.apiSchemas.length, 2);
       expect(parser.apiSchemas['CorrectList'], apiSchema);
       expect(parser.apiSchemas['SomeClass'], isNotNull);
-      var json = jsonSchema.toResponse(apiSchema.asDiscovery);
+      var json = jsonSchema!.toResponse(apiSchema.asDiscovery);
       var expectedJson = {
         'id': 'CorrectList',
         'type': 'object',

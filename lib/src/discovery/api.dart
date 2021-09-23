@@ -16,7 +16,7 @@ class DiscoveryApi {
   @ApiResource(name: 'apis')
   final DiscoveryResource apis;
 
-  factory DiscoveryApi(ApiServer server, String apiPrefix) {
+  factory DiscoveryApi(ApiServer server, String? apiPrefix) {
     if (apiPrefix == null) {
       apiPrefix = '';
     }
@@ -44,9 +44,10 @@ class DiscoveryResource {
       description:
           'Retrieve the description of a particular version of an api.')
   RestDescription getRest(String api, String version) {
-    return _server.getDiscoveryDocument(context.baseUrl, '/$api/$version');
+    return _server.getDiscoveryDocument(context!.baseUrl, '/$api/$version');
   }
 
+  // ignore: todo
   // TODO: support the query string parameters
   @ApiMethod(
       path: 'apis', //?name={name}&preferred={value}
@@ -60,7 +61,7 @@ class DiscoveryResource {
       var path = '$_apiPrefix/$_API_NAME/$_API_VERSION/apis/${item.name}/'
           '${item.version}/rest';
       item
-        ..discoveryRestUrl = '${context.baseUrl}$path'
+        ..discoveryRestUrl = '${context!.baseUrl}$path'
         ..discoveryLink = '.$path';
     });
     return new DirectoryList()

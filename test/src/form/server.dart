@@ -2,6 +2,8 @@
 // for details. All rights reserved. Use of this source code is governed by a
 // BSD-style license that can be found in the LICENSE file.
 
+
+
 library test.form.server;
 
 import 'dart:async';
@@ -10,27 +12,27 @@ import 'dart:io';
 import 'package:rpc/rpc.dart';
 
 class SimpleMessage {
-  String field1;
-  String field2;
+  String? field1;
+  String? field2;
 }
 
 class SimpleMixMessage {
-  String field1;
-  MediaMessage field2;
+  String? field1;
+  MediaMessage? field2;
 }
 
 class MegaMixMessage {
-  String name;
-  int age;
-  MediaMessage resume;
+  String? name;
+  int? age;
+  MediaMessage? resume;
 }
 
 class MultipleFile {
-  List<MediaMessage> files;
+  List<MediaMessage>? files;
 }
 
 class MultipleFile2 {
-  Map<String, MediaMessage> files;
+  Map<String, MediaMessage>? files;
 }
 
 @ApiClass(version: 'v1')

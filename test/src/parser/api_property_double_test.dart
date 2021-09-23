@@ -2,6 +2,8 @@
 // for details. All rights reserved. Use of this source code is governed by a
 // BSD-style license that can be found in the LICENSE file.
 
+
+
 library api_property_double_tests;
 
 import 'dart:mirrors';
@@ -14,69 +16,69 @@ import 'package:rpc/src/discovery/config.dart' as discovery;
 import 'package:test/test.dart';
 
 class CorrectDouble {
-  double aDouble;
+  double? aDouble;
 
   @ApiProperty(name: 'anotherName', description: 'Description of a Double.')
-  double aNamedDouble;
+  double? aNamedDouble;
 
   @ApiProperty(defaultValue: 4.2)
-  double aDoubleWithDefault;
+  double? aDoubleWithDefault;
 
   @ApiProperty(format: 'double')
-  double aDoubleWithFormat1;
+  double? aDoubleWithFormat1;
 
   @ApiProperty(format: 'float')
-  double aDoubleWithFormat2;
+  double? aDoubleWithFormat2;
 
   @ApiProperty(defaultValue: -1e308)
-  double aDoubleWithVerySmallDefault;
+  double? aDoubleWithVerySmallDefault;
 
   @ApiProperty(defaultValue: 1e308)
-  double aDoubleWithVeryLargeDefault;
+  double? aDoubleWithVeryLargeDefault;
 
   @ApiProperty(format: 'float', defaultValue: SMALLEST_FLOAT)
-  double aFloatWithVerySmallDefault;
+  double? aFloatWithVerySmallDefault;
 
   @ApiProperty(format: 'float', defaultValue: LARGEST_FLOAT)
-  double aFloatWithVeryLargeDefault;
+  double? aFloatWithVeryLargeDefault;
 
   @ApiProperty(required: true)
-  double aRequiredDouble;
+  double? aRequiredDouble;
 
   @ApiProperty(required: false)
-  double anOptionalDouble;
+  double? anOptionalDouble;
 
   @ApiProperty(ignore: true)
-  double ignored;
+  double? ignored;
 }
 
 class WrongDouble {
   @ApiProperty(minValue: 0, maxValue: 1)
-  double aDoubleWithMinMax;
+  double? aDoubleWithMinMax;
 
   @ApiProperty(format: 'int32')
-  double aDoubleWithIntFormat;
+  double? aDoubleWithIntFormat;
 
   @ApiProperty(format: 'foo')
-  double aDoubleWithInvalidFormat;
+  double? aDoubleWithInvalidFormat;
 
   @ApiProperty(values: const {'enumKey': 'enumValue'})
-  double aDoubleWithEnumValues;
+  double? aDoubleWithEnumValues;
 
   @ApiProperty(defaultValue: -2.0e308)
-  double aDoubleWithTooSmallDefault;
+  double? aDoubleWithTooSmallDefault;
 
   @ApiProperty(defaultValue: 2.0e+309)
-  double aDoubleWithTooLargeDefault;
+  double? aDoubleWithTooLargeDefault;
 
   @ApiProperty(format: 'float', defaultValue: SMALLEST_FLOAT * 10)
-  double aFloatWithTooSmallDefault;
+  double? aFloatWithTooSmallDefault;
 
   @ApiProperty(format: 'float', defaultValue: LARGEST_FLOAT * 10)
-  double aFloatWithTooLargeDefault;
+  double? aFloatWithTooLargeDefault;
 }
 
-final ApiConfigSchema jsonSchema =
+final ApiConfigSchema? jsonSchema =
     new ApiParser().parseSchema(reflectClass(discovery.JsonSchema), false);
 
 void main() {
@@ -84,11 +86,11 @@ void main() {
     test('simple', () {
       var parser = new ApiParser();
       ApiConfigSchema apiSchema =
-          parser.parseSchema(reflectClass(CorrectDouble), true);
+          parser.parseSchema(reflectClass(CorrectDouble), true)!;
       expect(parser.isValid, isTrue);
       expect(parser.apiSchemas.length, 1);
       expect(parser.apiSchemas['CorrectDouble'], apiSchema);
-      var json = jsonSchema.toResponse(apiSchema.asDiscovery);
+      var json = jsonSchema!.toResponse(apiSchema.asDiscovery);
       var expectedJson = {
         'id': 'CorrectDouble',
         'type': 'object',

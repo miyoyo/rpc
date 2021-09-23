@@ -2,6 +2,8 @@
 // for details. All rights reserved. Use of this source code is governed by a
 // BSD-style license that can be found in the LICENSE file.
 
+
+
 library no_default_constructor_api;
 
 import 'package:rpc/src/annotations.dart';
@@ -11,7 +13,7 @@ class NoDefaultConstructorApi {
   NoDefaultConstructorApi(String foo);
 
   @ApiMethod(path: 'nodefault')
-  VoidMessage hello() {
+  VoidMessage? hello() {
     return null;
   }
 }

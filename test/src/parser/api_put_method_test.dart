@@ -2,6 +2,8 @@
 // for details. All rights reserved. Use of this source code is governed by a
 // BSD-style license that can be found in the LICENSE file.
 
+
+
 library api_put_method_tests;
 
 import 'package:rpc/rpc.dart';
@@ -15,12 +17,12 @@ import '../test_api/messages2.dart';
 @ApiClass(version: 'v1')
 class CorrectPutApi {
   @ApiMethod(method: 'PUT', path: 'minimumPut')
-  VoidMessage minimumPut(SimpleMessage msg) {
+  VoidMessage? minimumPut(SimpleMessage msg) {
     return null;
   }
 
   @ApiMethod(name: 'namedPut', method: 'PUT', path: 'namedPut')
-  VoidMessage namedPut(SimpleMessage msg) {
+  VoidMessage? namedPut(SimpleMessage msg) {
     return null;
   }
 
@@ -34,7 +36,7 @@ class CorrectPutApi {
       method: 'PUT',
       path: 'fullPut',
       description: 'A method with all annotations set')
-  VoidMessage fullPut(SimpleMessage msg) {
+  VoidMessage? fullPut(SimpleMessage msg) {
     return null;
   }
 }
@@ -42,46 +44,46 @@ class CorrectPutApi {
 @ApiClass(version: 'v1')
 class CorrectPutApiWithPath {
   @ApiMethod(method: 'PUT', path: 'putWithString/{aString}')
-  VoidMessage putWithString(String aString, SimpleMessage msg) {
+  VoidMessage? putWithString(String aString, SimpleMessage msg) {
     return null;
   }
 
   @ApiMethod(method: 'PUT', path: 'putWithInt/{anInt}')
-  VoidMessage putWithInt(int anInt, SimpleMessage msg) {
+  VoidMessage? putWithInt(int anInt, SimpleMessage msg) {
     return null;
   }
 
   @ApiMethod(method: 'PUT', path: 'putWithStringInt/{aString}/{anInt}')
-  VoidMessage putWithStringInt(String aString, int anInt, SimpleMessage msg) {
+  VoidMessage? putWithStringInt(String aString, int anInt, SimpleMessage msg) {
     return null;
   }
 
   @ApiMethod(method: 'PUT', path: 'putWithIntString/{anInt}/{aString}')
-  VoidMessage putWithIntString(String anInt, int aString, SimpleMessage msg) {
+  VoidMessage? putWithIntString(String anInt, int aString, SimpleMessage msg) {
     return null;
   }
 
   @ApiMethod(method: 'PUT', path: 'putWithStringString/{aString1}/{aString2}')
-  VoidMessage putWithStringString(
+  VoidMessage? putWithStringString(
       String aString1, String aString2, SimpleMessage msg) {
     return null;
   }
 
   @ApiMethod(method: 'PUT', path: 'putWithIntInt/{anInt1}/{anInt2}')
-  VoidMessage putWithIntInt(int anInt1, int anInt2, SimpleMessage msg) {
+  VoidMessage? putWithIntInt(int anInt1, int anInt2, SimpleMessage msg) {
     return null;
   }
 
   @ApiMethod(
       method: 'PUT', path: 'putWithIntKeywordInt/{anInt1}/keyword/{anInt2}')
-  VoidMessage putWithIntKeywordInt(int anInt1, int anInt2, SimpleMessage msg) {
+  VoidMessage? putWithIntKeywordInt(int anInt1, int anInt2, SimpleMessage msg) {
     return null;
   }
 
   @ApiMethod(
       method: 'PUT',
       path: 'putWithStringKeywordString/{aString1}/keyword/{aString2}')
-  VoidMessage putWithStringKeywordString(
+  VoidMessage? putWithStringKeywordString(
       String aString1, String aString2, SimpleMessage msg) {
     return null;
   }
@@ -91,7 +93,7 @@ class CorrectPutApiWithPath {
 // they are not specific to PUT.
 class WrongPutApi {
   @ApiMethod(method: 'PUT', path: 'missingMessageParam')
-  VoidMessage missingMessageParam() {
+  VoidMessage? missingMessageParam() {
     return null;
   }
 
@@ -99,7 +101,7 @@ class WrongPutApi {
   void invalidVoidResponse(VoidMessage msg) {}
 
   @ApiMethod(method: 'PUT', path: 'dynamicMessage')
-  VoidMessage dynamicMessage(message) {
+  VoidMessage? dynamicMessage(message) {
     return null;
   }
 }
@@ -107,44 +109,44 @@ class WrongPutApi {
 @ApiClass(version: 'v1test')
 class WrongPutApiWithPathQuery {
   @ApiMethod(method: 'PUT', path: 'missingRequestParam/{id}')
-  VoidMessage missingRequestParam(String id) {
+  VoidMessage? missingRequestParam(String id) {
     return null;
   }
 
   @ApiMethod(method: 'PUT', path: 'missingPathParam/{id}')
-  VoidMessage missingPathParam(SimpleMessage msg) {
+  VoidMessage? missingPathParam(SimpleMessage msg) {
     return null;
   }
 
   @ApiMethod(method: 'PUT', path: 'missingPathRegExp')
-  VoidMessage missingPathRegExp(String path, VoidMessage msg) {
+  VoidMessage? missingPathRegExp(String path, VoidMessage msg) {
     return null;
   }
 
   @ApiMethod(method: 'PUT', path: 'withStringQueryParam/{pathParam}')
-  VoidMessage withStringQueryParam(String pathParam, VoidMessage msg,
-      {String queryParam}) {
+  VoidMessage? withStringQueryParam(String pathParam, VoidMessage msg,
+      {String? queryParam}) {
     return null;
   }
 
   @ApiMethod(method: 'PUT', path: 'withIntQueryParam/{pathParam}')
-  VoidMessage withIntQueryParam(String pathParam, VoidMessage msg,
-      {int queryParam}) {
+  VoidMessage? withIntQueryParam(String pathParam, VoidMessage msg,
+      {int? queryParam}) {
     return null;
   }
 
   @ApiMethod(method: 'PUT', path: 'withDynamicQueryParam')
-  VoidMessage withDynamicQueryParam(VoidMessage msg, {queryParam}) {
+  VoidMessage? withDynamicQueryParam(VoidMessage msg, {queryParam}) {
     return null;
   }
 
   @ApiMethod(method: 'PUT', path: 'withQueryNoMsg/{queryParam}')
-  VoidMessage withQueryNoMsg({String queryParam}) {
+  VoidMessage? withQueryNoMsg({String? queryParam}) {
     return null;
   }
 
   @ApiMethod(method: 'PUT', path: 'withOptionalNoMsg')
-  VoidMessage withOptionalNoMsg([String queryParam]) {
+  VoidMessage? withOptionalNoMsg([String? queryParam]) {
     return null;
   }
 }
@@ -158,7 +160,7 @@ void main() {
       expect(apiCfg.methods.length, 4);
       var discoveryDoc =
           apiCfg.generateDiscoveryDocument('http://localhost:8080', null);
-      var json = discoveryDocSchema.toResponse(discoveryDoc);
+      var json = discoveryDocSchema!.toResponse(discoveryDoc);
       var expectedSchemas = {
         'SimpleMessage': {
           'id': 'SimpleMessage',
@@ -217,7 +219,7 @@ void main() {
       expect(apiCfg.methods.length, 8);
       var discoveryDoc =
           apiCfg.generateDiscoveryDocument('http://localhost:8080', null);
-      var json = discoveryDocSchema.toResponse(discoveryDoc);
+      var json = discoveryDocSchema!.toResponse(discoveryDoc);
       var expectedSchemas = {
         'SimpleMessage': {
           'id': 'SimpleMessage',

@@ -2,6 +2,8 @@
 // for details. All rights reserved. Use of this source code is governed by a
 // BSD-style license that can be found in the LICENSE file.
 
+
+
 @TestOn('browser')
 library test.form.browser;
 
@@ -20,7 +22,7 @@ void main() {
           'http://localhost:4242/testAPI/v1/post/simple',
           method: 'POST',
           sendData: form);
-      final result = jsonDecode(response.responseText);
+      final result = jsonDecode(response.responseText!);
       expect('hello', equals(result['field1']));
       expect('world', equals(result['field2']));
     });
@@ -36,7 +38,7 @@ void main() {
           'http://localhost:4242/testAPI/v1/post/simple-mix',
           method: 'POST',
           sendData: form);
-      final result = jsonDecode(response.responseText);
+      final result = jsonDecode(response.responseText!);
 
       expect('hello', equals(result['field1']));
       expect(blobString.codeUnits, equals(result['field2']['bytes']));
@@ -54,7 +56,7 @@ void main() {
           'http://localhost:4242/testAPI/v1/post/mega-mix',
           method: 'POST',
           sendData: form);
-      final result = jsonDecode(response.responseText);
+      final result = jsonDecode(response.responseText!);
 
       expect('John', equals(result['name']));
       expect(42, equals(result['age']));
@@ -70,7 +72,7 @@ void main() {
           method: 'POST',
           sendData: jsonEncode(request),
           requestHeaders: {'content-type': 'application/json;charset=UTF-8'});
-      final result = jsonDecode(response.responseText);
+      final result = jsonDecode(response.responseText!);
       expect('hello', equals(result['field1']));
       expect('world', equals(result['field2']));
     });
@@ -85,7 +87,7 @@ void main() {
           method: 'POST',
           sendData: jsonEncode(request),
           requestHeaders: {'content-type': 'application/json;charset=UTF-8'});
-      final result = jsonDecode(response.responseText);
+      final result = jsonDecode(response.responseText!);
 
       expect('hello', equals(result['field1']));
       expect(blobString.codeUnits, equals(result['field2']['bytes']));
@@ -102,7 +104,7 @@ void main() {
           method: 'POST',
           sendData: jsonEncode(request),
           requestHeaders: {'content-type': 'application/json;charset=UTF-8'});
-      final result = jsonDecode(response.responseText);
+      final result = jsonDecode(response.responseText!);
 
       expect('John', equals(result['name']));
       expect(42, equals(result['age']));
@@ -122,7 +124,7 @@ void main() {
           method: 'POST',
           sendData: jsonEncode(request),
           requestHeaders: {'content-type': 'application/json;charset=UTF-8'});
-      final result = jsonDecode(response.responseText);
+      final result = jsonDecode(response.responseText!);
 
       expect(3, equals(result['files'].length));
       expect(blobString.codeUnits, equals(result['files'][1]['bytes']));
@@ -141,7 +143,7 @@ void main() {
           method: 'POST',
           sendData: jsonEncode(request),
           requestHeaders: {'content-type': 'application/json;charset=UTF-8'});
-      final result = jsonDecode(response.responseText);
+      final result = jsonDecode(response.responseText!);
 
       expect(3, equals(result['files'].length));
       expect(blobString.codeUnits, equals(result['files']['file2']['bytes']));

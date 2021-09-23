@@ -3,6 +3,7 @@
 // BSD-style license that can be found in the LICENSE file.
 ///ported from the http_server package
 ///http://pub.dartlang.org/packages/http_server
+
 library http_body_parser;
 
 import 'dart:async';
@@ -34,10 +35,11 @@ Future<PostData> _asBinary(ParsedHttpApiRequest request) => request.body
     .then((BytesBuilder bld) => new PostData('binary', bld.takeBytes()));
 
 Future<PostData> _asText(ParsedHttpApiRequest request) {
-  final String charset = request.contentType.charset;
+  final String? charset = request.contentType.charset;
   final Encoding encoding =
-      charset != null ? Encoding.getByName(charset) : utf8;
-  return encoding.decoder.bind(request.body)
+      charset != null ? Encoding.getByName(charset)! : utf8;
+  return encoding.decoder
+      .bind(request.body)
       .fold(new StringBuffer(), _fillStringBuffer)
       .then((StringBuffer buffer) => new PostData('text', buffer.toString()));
 }
@@ -46,7 +48,7 @@ Future<PostData> _asFormData(ParsedHttpApiRequest request) {
   final ContentType contentType = request.contentType;
   return request.body
       .transform(
-          new MimeMultipartTransformer(contentType.parameters['boundary']))
+          new MimeMultipartTransformer(contentType.parameters['boundary']!))
       .map(_HttpMultipartFormData.parse)
       .map((_HttpMultipartFormData multipart) {
         Future future;
@@ -60,16 +62,16 @@ Future<PostData> _asFormData(ParsedHttpApiRequest request) {
               .then((BytesBuilder builder) => builder.takeBytes());
         }
         return future.then((dynamic data) {
-          final String filename =
-              multipart.contentDisposition.parameters['filename'];
+          final String? filename =
+              multipart.contentDisposition!.parameters['filename'];
           if (filename != null) {
             if (multipart.isText) data = (data as String).codeUnits;
             data = new MediaMessage()
-              ..contentType = multipart.contentType.value
+              ..contentType = multipart.contentType!.value
               ..bytes = data
               ..metadata = {'filename': filename};
           }
-          return [multipart.contentDisposition.parameters['name'], data];
+          return [multipart.contentDisposition!.parameters['name'], data];
         });
       })
       .fold<List<Future>>([],
@@ -93,7 +95,6 @@ Future<PostData> _asFormData(ParsedHttpApiRequest request) {
 
 Future<PostData> parseRequestBody(ParsedHttpApiRequest request) {
   final ContentType contentType = request.contentType;
-  if (contentType == null) return _asBinary(request);
 
   switch (contentType.primaryType) {
     case "text":
@@ -134,31 +135,31 @@ Future<PostData> parseRequestBody(ParsedHttpApiRequest request) {
 }
 
 class _HttpMultipartFormData<T> extends Stream<T> {
-  final ContentType contentType;
-  final HeaderValue contentDisposition;
-  final HeaderValue contentTransferEncoding;
+  final ContentType? contentType;
+  final HeaderValue? contentDisposition;
+  final HeaderValue? contentTransferEncoding;
   final MimeMultipart _mimeMultipart;
   bool _isText = false;
   bool get isText => _isText;
   bool get isBinary => !_isText;
-  Stream _stream;
+  late Stream _stream;
 
   static _HttpMultipartFormData parse(MimeMultipart multipart) {
-    ContentType type;
-    HeaderValue encoding;
-    HeaderValue disposition;
+    ContentType? type;
+    HeaderValue? encoding;
+    HeaderValue? disposition;
     for (String key in multipart.headers.keys) {
       switch (key) {
         case 'content-type':
-          type = ContentType.parse(multipart.headers[key]);
+          type = ContentType.parse(multipart.headers[key]!);
           break;
 
         case 'content-transfer-encoding':
-          encoding = HeaderValue.parse(multipart.headers[key]);
+          encoding = HeaderValue.parse(multipart.headers[key]!);
           break;
 
         case 'content-disposition':
-          disposition = HeaderValue.parse(multipart.headers[key],
+          disposition = HeaderValue.parse(multipart.headers[key]!,
               preserveBackslash: true);
           break;
 
@@ -183,19 +184,20 @@ class _HttpMultipartFormData<T> extends Stream<T> {
 
     if (contentTransferEncoding != null)
       throw new HttpException("Unsupported contentTransferEncoding: "
-          "${contentTransferEncoding.value}");
+          "${contentTransferEncoding!.value}");
 
     if (contentType == null ||
-        contentType.primaryType == 'text' ||
-        contentType.mimeType == 'application/json') {
+        contentType!.primaryType == 'text' ||
+        contentType!.mimeType == 'application/json') {
       _isText = true;
       final StringBuffer buffer = new StringBuffer();
       final Encoding encoding = contentType != null
-          ? Encoding.getByName(contentType.charset) ?? defaultEncoding
+          ? Encoding.getByName(contentType!.charset) ?? defaultEncoding
           : defaultEncoding;
+      //TODO: Fix this type bullshit
       _stream = _stream.transform(encoding.decoder).expand((String data) {
         buffer.write(data);
-        final String out = _decodeHttpEntityString(buffer.toString());
+        final String? out = _decodeHttpEntityString(buffer.toString());
         if (out != null) {
           buffer.clear();
           return [out];
@@ -205,16 +207,18 @@ class _HttpMultipartFormData<T> extends Stream<T> {
     }
   }
 
-  StreamSubscription<T> listen(void onData(T data),
-          {void onDone(), Function onError, bool cancelOnError}) =>
-      _stream.listen(onData,
-          onDone: onDone, onError: onError, cancelOnError: cancelOnError);
+  StreamSubscription<T> listen(void onData(T data)?,
+          {void onDone()?, Function? onError, bool? cancelOnError}) =>
+      _stream.listen((v) => onData?.call(v),
+          onDone: onDone,
+          onError: onError,
+          cancelOnError: cancelOnError) as StreamSubscription<T>;
 
-  String value(String name) => _mimeMultipart.headers[name];
+  String? value(String name) => _mimeMultipart.headers[name];
 
   // Decode a string with HTTP entities. Returns null if the string ends in the
   // middle of a http entity.
-  static String _decodeHttpEntityString(String input) {
+  static String? _decodeHttpEntityString(String input) {
     int amp = input.lastIndexOf('&');
     if (amp < 0) return input;
     int end = input.lastIndexOf(';');

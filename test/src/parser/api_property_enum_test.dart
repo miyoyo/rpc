@@ -2,6 +2,8 @@
 // for details. All rights reserved. Use of this source code is governed by a
 // BSD-style license that can be found in the LICENSE file.
 
+
+
 library api_property_enum_tests;
 
 import 'dart:mirrors';
@@ -14,20 +16,20 @@ import 'package:test/test.dart';
 
 class CorrectEnum {
   @ApiProperty(values: const {'foo': 'A Foo', 'bar': 'A Bar'})
-  String anEnum;
+  String? anEnum;
 
   @ApiProperty(
       name: 'anotherName',
       description: 'Description of an Enum.',
       values: const {'foo': 'A Foo', 'bar': 'A Bar'})
-  String aNamedEnum;
+  String? aNamedEnum;
 
   @ApiProperty(
       values: const {'foo': 'A Foo', 'bar': 'A Bar'}, defaultValue: 'foo')
-  String anEnumWithDefault;
+  String? anEnumWithDefault;
 
   @ApiProperty(values: const {'foo': 'A Foo', 'bar': 'A Bar'}, required: true)
-  String aRequiredEnum;
+  String? aRequiredEnum;
 
   @ApiProperty(
       name: 'aFullEnum',
@@ -35,26 +37,26 @@ class CorrectEnum {
       values: const {'foo': 'A Foo', 'bar': 'A Bar'},
       required: true,
       defaultValue: 'bar')
-  String anEnumWithAllAnnotations;
+  String? anEnumWithAllAnnotations;
 
   @ApiProperty(values: const {'foo': 'A Foo', 'bar': 'A Bar'}, ignore: true)
-  String ignored;
+  String? ignored;
 }
 
 class WrongEnum {
   @ApiProperty(
       values: const {'foo': 'A Foo', 'bar': 'A Bar'}, minValue: 0, maxValue: 1)
-  String anEnumWithMinMax;
+  String? anEnumWithMinMax;
 
   @ApiProperty(values: const {'foo': 'A Foo', 'bar': 'A Bar'}, format: 'int32')
-  String anEnumWithFormat;
+  String? anEnumWithFormat;
 
   @ApiProperty(
       values: const {'foo': 'A Foo', 'bar': 'A Bar'}, defaultValue: 'baz')
-  String anEnumWithIncorrectDefault;
+  String? anEnumWithIncorrectDefault;
 }
 
-final ApiConfigSchema jsonSchema =
+final ApiConfigSchema? jsonSchema =
     new ApiParser().parseSchema(reflectClass(discovery.JsonSchema), false);
 
 void main() {
@@ -62,11 +64,11 @@ void main() {
     test('simple', () {
       var parser = new ApiParser();
       ApiConfigSchema apiSchema =
-          parser.parseSchema(reflectClass(CorrectEnum), true);
+          parser.parseSchema(reflectClass(CorrectEnum), true)!;
       expect(parser.isValid, isTrue);
       expect(parser.apiSchemas.length, 1);
       expect(parser.apiSchemas['CorrectEnum'], apiSchema);
-      var json = jsonSchema.toResponse(apiSchema.asDiscovery);
+      var json = jsonSchema!.toResponse(apiSchema.asDiscovery);
       var expectedJson = {
         'id': 'CorrectEnum',
         'type': 'object',

@@ -2,6 +2,8 @@
 // for details. All rights reserved. Use of this source code is governed by a
 // BSD-style license that can be found in the LICENSE file.
 
+
+
 import 'dart:async';
 import 'dart:convert';
 import 'dart:io';
@@ -49,8 +51,8 @@ ArgParser globalArgParser() {
     ..addFlag('help', abbr: 'h', help: 'Displays usage information.');
 }
 
-ArgResults parseArguments(ArgParser parser, List<String> arguments) {
-  ArgResults parsedArguments;
+ArgResults? parseArguments(ArgParser parser, List<String> arguments) {
+  ArgResults? parsedArguments;
   try {
     parsedArguments = parser.parse(arguments);
   } on FormatException catch (e) {
@@ -59,7 +61,7 @@ ArgResults parseArguments(ArgParser parser, List<String> arguments) {
   return parsedArguments;
 }
 
-void dieWithUsage([String message]) {
+void dieWithUsage([String? message]) {
   if (message != null) {
     print(message);
   }
@@ -86,8 +88,8 @@ void dieWithUsage([String message]) {
 
 main(List<String> arguments) async {
   var parser = globalArgParser();
-  var options = parseArguments(parser, arguments);
-  var commandOptions = options.command;
+  var options = parseArguments(parser, arguments)!;
+  var commandOptions = options.command!;
   var subCommands = ['discovery', 'client'];
 
   if (options['help']) {
@@ -114,7 +116,7 @@ main(List<String> arguments) async {
     // Strip out leading and ending '/'.
     apiPrefix = apiPrefix == null ? '' : apiPrefix.replaceAll('/', '');
     var generator = new ClientApiGenerator(apiFilePath, apiPort, apiPrefix);
-    var results;
+    late var results;
     switch (commandOptions.name) {
       case 'discovery':
         results = await generator.generateDiscovery();
@@ -138,14 +140,14 @@ main(List<String> arguments) async {
 }
 
 // Computes where to put the client stub code.
-String _clientDirectory(String apiFilePath, String clientDirectoryPath) {
+String _clientDirectory(String apiFilePath, String? clientDirectoryPath) {
   // If the user specified a directory, just use it.
   if (clientDirectoryPath != null) {
     return clientDirectoryPath;
   }
   // Otherwise default to 'lib/client' in the package.
   assert(apiFilePath != null);
-  var packagePath = findPackageRoot(apiFilePath);
+  var packagePath = findPackageRoot(apiFilePath)!;
   if (packagePath == null) {
     print('API file \'$apiFilePath\' must be within a package.');
     exit(1);
@@ -156,9 +158,9 @@ String _clientDirectory(String apiFilePath, String clientDirectoryPath) {
 /// Class used to both generate client stub code as well as Discovery Documents.
 class ClientApiGenerator {
   final int _apiPort;
-  final String _apiPrefix;
-  String _apiFilePath;
-  String _packageDirectoryPath;
+  final String? _apiPrefix;
+  String? _apiFilePath;
+  String? _packageDirectoryPath;
 
   ClientApiGenerator(String dartFilePath, this._apiPort, this._apiPrefix) {
     var apiFile = new File(dartFilePath);
@@ -169,13 +171,13 @@ class ClientApiGenerator {
 
     // Find the package directory from where to serve the packages used by the
     // top-level API class.
-    _packageDirectoryPath = findPackageRoot(_apiFilePath);
+    _packageDirectoryPath = findPackageRoot(_apiFilePath!);
     if (_packageDirectoryPath == null) {
       throw new GeneratorException(
           'File \'$dartFilePath\' must be in a valid package.');
     }
-    var packageDir = new Directory(join(_packageDirectoryPath, 'packages'));
-    var packagesFile = new File(join(_packageDirectoryPath, '.packages'));
+    var packageDir = new Directory(join(_packageDirectoryPath!, 'packages'));
+    var packagesFile = new File(join(_packageDirectoryPath!, '.packages'));
     if (!packageDir.existsSync() && !packagesFile.existsSync()) {
       throw new GeneratorException(
           'Please run \'pub get\' in your API package before running the '
@@ -205,7 +207,7 @@ class ClientApiGenerator {
   Future<List<DescriptionImportPair>> generateDiscoveryWithImports() async {
     return _withServer((HttpServer server) async {
       Map<String, Map<String, String>> result =
-          await _execute(server.port, 'discoveryWithImports');
+          await (_execute(server.port, 'discoveryWithImports') as FutureOr<Map<String, Map<String, String>>>);
       // Map the result from the isolate to a list of DescriptionImportPairs.
       var descriptions = <DescriptionImportPair>[];
       result.forEach((description, importMap) {
@@ -277,7 +279,7 @@ class ClientApiGenerator {
     Future _httpSourceLoader(HttpRequest request) async {
       var path = request.uri.path;
       if (path.contains('/packages/')) {
-        File packageFile = new File(_packageDirectoryPath + path);
+        File packageFile = new File(_packageDirectoryPath! + path);
         request.response
           ..add(packageFile.readAsBytesSync())
           ..close();
@@ -303,8 +305,8 @@ class ClientApiGenerator {
   }
 
   static Future _isolateTrampoline(List<dynamic> args) async {
-    SendPort messagePort = args[5];
-    SendPort errorPort = args[6];
+    SendPort? messagePort = args[5];
+    SendPort? errorPort = args[6];
     return await Isolate.spawnUri(
         Uri.parse(args[0]),
         <String>[
@@ -318,7 +320,7 @@ class ClientApiGenerator {
   }
 
   String get generatorSource {
-    assert(_apiFilePath != null && _apiFilePath.isNotEmpty);
+    assert(_apiFilePath != null && _apiFilePath!.isNotEmpty);
     return '''
     import 'dart:async';
     import 'dart:convert';

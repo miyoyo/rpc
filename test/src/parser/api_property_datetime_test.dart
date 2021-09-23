@@ -2,6 +2,8 @@
 // for details. All rights reserved. Use of this source code is governed by a
 // BSD-style license that can be found in the LICENSE file.
 
+
+
 library api_property_datetime_tests;
 
 import 'dart:mirrors';
@@ -13,42 +15,42 @@ import 'package:rpc/src/discovery/config.dart' as discovery;
 import 'package:test/test.dart';
 
 class CorrectDateTime {
-  DateTime aDateTime;
+  DateTime? aDateTime;
 
   @ApiProperty(name: 'anotherName', description: 'Description of a DateTime.')
-  DateTime aNamedDateTime;
+  DateTime? aNamedDateTime;
 
   @ApiProperty(defaultValue: '1969-07-20T20:18:00.000Z')
-  DateTime aDateTimeWithDefault;
+  DateTime? aDateTimeWithDefault;
 
   @ApiProperty(required: true)
-  DateTime aRequiredDateTime;
+  DateTime? aRequiredDateTime;
 
   @ApiProperty(required: false)
-  DateTime anOptionalDateTime;
+  DateTime? anOptionalDateTime;
 
   @ApiProperty(ignore: true)
-  DateTime ignored;
+  DateTime? ignored;
 }
 
 class WrongDateTime {
   @ApiProperty(minValue: 0, maxValue: 1)
-  DateTime aDateTimeWithMinMax;
+  DateTime? aDateTimeWithMinMax;
 
   @ApiProperty(format: 'int32')
-  DateTime aDateTimeWithIntFormat;
+  DateTime? aDateTimeWithIntFormat;
 
   @ApiProperty(format: 'foo')
-  DateTime aDateTimeWithInvalidFormat;
+  DateTime? aDateTimeWithInvalidFormat;
 
   @ApiProperty(values: const {'enumKey': 'enumValue'})
-  DateTime aDateTimeWithEnumValues;
+  DateTime? aDateTimeWithEnumValues;
 
   @ApiProperty(defaultValue: 'incorrect date')
-  DateTime aDateTimeWithIncorrectDefault;
+  DateTime? aDateTimeWithIncorrectDefault;
 }
 
-final ApiConfigSchema jsonSchema =
+final ApiConfigSchema? jsonSchema =
     new ApiParser().parseSchema(reflectClass(discovery.JsonSchema), false);
 
 void main() {
@@ -56,11 +58,11 @@ void main() {
     test('simple', () {
       var parser = new ApiParser();
       ApiConfigSchema apiSchema =
-          parser.parseSchema(reflectClass(CorrectDateTime), true);
+          parser.parseSchema(reflectClass(CorrectDateTime), true)!;
       expect(parser.isValid, isTrue);
       expect(parser.apiSchemas.length, 1);
       expect(parser.apiSchemas['CorrectDateTime'], apiSchema);
-      var json = jsonSchema.toResponse(apiSchema.asDiscovery);
+      var json = jsonSchema!.toResponse(apiSchema.asDiscovery);
       var expectedJson = {
         'id': 'CorrectDateTime',
         'type': 'object',

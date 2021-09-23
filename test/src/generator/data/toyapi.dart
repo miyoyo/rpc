@@ -2,6 +2,8 @@
 // for details. All rights reserved. Use of this source code is governed by a
 // BSD-style license that can be found in the LICENSE file.
 
+
+
 library toyapi;
 
 import 'dart:io';
@@ -10,38 +12,38 @@ import 'package:rpc/rpc.dart';
 import 'dart:async';
 
 class ToyResponse {
-  String result;
+  String? result;
   ToyResponse();
 }
 
 class ToyResourceResponse {
-  String result;
+  String? result;
   ToyResourceResponse();
 }
 
 class NestedResponse {
-  String nestedResult;
+  String? nestedResult;
   NestedResponse();
 }
 
 class ToyMapResponse {
-  String result;
-  Map<String, NestedResponse> mapResult;
+  String? result;
+  Map<String, NestedResponse>? mapResult;
 
   ToyMapResponse();
 }
 
 class ToyRequest {
   @ApiProperty(required: true)
-  String name;
+  String? name;
 
   @ApiProperty(defaultValue: 1000)
-  int age;
+  int? age;
 }
 
 class ToyAgeRequest {
   @ApiProperty(defaultValue: 1000)
-  int age;
+  int? age;
 }
 
 @ApiClass(version: '0.1')
@@ -55,7 +57,7 @@ class ToyApi {
   final ToyStorage storage = new ToyStorage();
 
   @ApiMethod(path: 'noop')
-  VoidMessage noop() {
+  VoidMessage? noop() {
     return null;
   }
 
@@ -74,7 +76,7 @@ class ToyApi {
   // as it is not allowed for a method to return null when its declared return
   // type is not VoidMessage.
   @ApiMethod(path: 'helloReturnNull')
-  ToyResponse helloReturnNull() {
+  ToyResponse? helloReturnNull() {
     return null;
   }
 
@@ -85,7 +87,7 @@ class ToyApi {
 
   @ApiMethod(path: 'hero/{name}/{isHero}')
   ToyResponse helloHeroWithBoolean(String name, bool isHero,
-      {bool fromComics}) {
+      {bool? fromComics}) {
     String isHeroString;
     if (isHero) {
       isHeroString = "you are a hero";
@@ -125,7 +127,7 @@ class ToyApi {
     // Use the invocation context to change the response's status code.
     // Can also be used to pass response headers and look at the HTTP requests
     // headers, cookies, and url.
-    context.responseStatusCode = HttpStatus.created;
+    context!.responseStatusCode = HttpStatus.created;
     return new ToyResponse()..result = 'Hello ${name} of age ${request.age}!';
   }
 
@@ -141,7 +143,7 @@ class ToyApi {
   }
 
   @ApiMethod(path: 'helloQuery/{name}')
-  ToyResponse helloNameQueryAgeFoo(String name, {String foo, int age}) {
+  ToyResponse helloNameQueryAgeFoo(String name, {String? foo, int? age}) {
     return new ToyResponse()..result = 'Hello $name of age $age with $foo!';
   }
 
@@ -157,30 +159,30 @@ class ToyApi {
   }
 
   @ApiMethod(path: 'helloNestedMapMap', method: 'POST')
-  Map<String, Map<String, bool>> helloNestedMapMap(
+  Map<String, Map<String, bool>>? helloNestedMapMap(
       Map<String, Map<String, int>> request) {
     return null;
   }
 
   @ApiMethod(path: 'helloNestedListList', method: 'POST')
-  List<List<String>> helloNestedListList(List<List<int>> request) {
+  List<List<String>>? helloNestedListList(List<List<int>> request) {
     return null;
   }
 
   @ApiMethod(path: 'helloNestedMapListMap', method: 'POST')
-  Map<String, List<Map<String, bool>>> helloNestedMapListMap(
+  Map<String, List<Map<String, bool>>>? helloNestedMapListMap(
       Map<String, List<Map<String, int>>> request) {
     return null;
   }
 
   @ApiMethod(path: 'helloNestedListMapList', method: 'POST')
-  List<Map<String, List<String>>> helloNestedListMapList(
+  List<Map<String, List<String>>>? helloNestedListMapList(
       List<Map<String, List<int>>> request) {
     return null;
   }
 
   @ApiMethod(path: 'helloListOfClass', method: 'POST')
-  Map<String, ToyResponse> helloListOfClass(List<ToyRequest> request) {
+  Map<String?, ToyResponse> helloListOfClass(List<ToyRequest> request) {
     var key, value;
     if (request == null || request.isEmpty) {
       key = 'John Doe';
@@ -193,7 +195,7 @@ class ToyApi {
   }
 
   @ApiMethod(path: 'helloListOfListOfClass', method: 'POST')
-  Map<String, ToyResponse> helloListOfListOfClass(
+  Map<String?, ToyResponse> helloListOfListOfClass(
       List<List<ToyRequest>> request) {
     var key, value;
     if (request == null ||

@@ -2,6 +2,8 @@
 // for details. All rights reserved. Use of this source code is governed by a
 // BSD-style license that can be found in the LICENSE file.
 
+
+
 library api_post_method_tests;
 
 import 'package:rpc/rpc.dart';
@@ -15,12 +17,12 @@ import '../test_api/messages2.dart';
 @ApiClass(version: 'v1')
 class CorrectPostApi {
   @ApiMethod(method: 'POST', path: 'minimumPost')
-  VoidMessage minimumPost(SimpleMessage msg) {
+  VoidMessage? minimumPost(SimpleMessage msg) {
     return null;
   }
 
   @ApiMethod(name: 'namedPost', method: 'POST', path: 'namedPost')
-  VoidMessage namedPost(SimpleMessage msg) {
+  VoidMessage? namedPost(SimpleMessage msg) {
     return null;
   }
 
@@ -34,7 +36,7 @@ class CorrectPostApi {
       method: 'POST',
       path: 'fullPost',
       description: 'A method with all annotations set')
-  VoidMessage fullPost(SimpleMessage msg) {
+  VoidMessage? fullPost(SimpleMessage msg) {
     return null;
   }
 }
@@ -42,56 +44,56 @@ class CorrectPostApi {
 @ApiClass(version: 'v1')
 class CorrectPostApiWithPath {
   @ApiMethod(method: 'POST', path: 'postWithString/{aString}')
-  VoidMessage postWithString(String aString, SimpleMessage msg) {
+  VoidMessage? postWithString(String aString, SimpleMessage msg) {
     return null;
   }
 
   @ApiMethod(method: 'POST', path: 'postWithInt/{anInt}')
-  VoidMessage postWithInt(int anInt, SimpleMessage msg) {
+  VoidMessage? postWithInt(int anInt, SimpleMessage msg) {
     return null;
   }
 
   @ApiMethod(method: 'POST', path: 'postWithBool/{aBool}')
-  VoidMessage postWithBool(bool aBool, SimpleMessage msg) {
+  VoidMessage? postWithBool(bool aBool, SimpleMessage msg) {
     return null;
   }
 
   @ApiMethod(method: 'POST', path: 'postWithStringInt/{aString}/{anInt}')
-  VoidMessage postWithStringInt(String aString, int anInt, SimpleMessage msg) {
+  VoidMessage? postWithStringInt(String aString, int anInt, SimpleMessage msg) {
     return null;
   }
 
   @ApiMethod(method: 'POST', path: 'postWithIntString/{anInt}/{aString}')
-  VoidMessage postWithIntString(String anInt, int aString, SimpleMessage msg) {
+  VoidMessage? postWithIntString(String anInt, int aString, SimpleMessage msg) {
     return null;
   }
 
   @ApiMethod(method: 'POST', path: 'postWithStringString/{aString1}/{aString2}')
-  VoidMessage postWithStringString(
+  VoidMessage? postWithStringString(
       String aString1, String aString2, SimpleMessage msg) {
     return null;
   }
 
   @ApiMethod(method: 'POST', path: 'postWithIntInt/{anInt1}/{anInt2}')
-  VoidMessage postWithIntInt(int anInt1, int anInt2, SimpleMessage msg) {
+  VoidMessage? postWithIntInt(int anInt1, int anInt2, SimpleMessage msg) {
     return null;
   }
 
   @ApiMethod(method: 'POST', path: 'postWithBoolInt/{aBool}/{anInt}')
-  VoidMessage postWithBoolInt(int aBool, int anInt, SimpleMessage msg) {
+  VoidMessage? postWithBoolInt(int aBool, int anInt, SimpleMessage msg) {
     return null;
   }
 
   @ApiMethod(
       method: 'POST', path: 'postWithIntKeywordInt/{anInt1}/keyword/{anInt2}')
-  VoidMessage postWithIntKeywordInt(int anInt1, int anInt2, SimpleMessage msg) {
+  VoidMessage? postWithIntKeywordInt(int anInt1, int anInt2, SimpleMessage msg) {
     return null;
   }
 
   @ApiMethod(
       method: 'POST',
       path: 'postWithStringKeywordString/{aString1}/keyword/{aString2}')
-  VoidMessage postWithStringKeywordString(
+  VoidMessage? postWithStringKeywordString(
       String aString1, String aString2, SimpleMessage msg) {
     return null;
   }
@@ -101,7 +103,7 @@ class CorrectPostApiWithPath {
 // they are not specific to POST.
 class WrongPostApi {
   @ApiMethod(method: 'POST', path: 'missingMessageParam')
-  VoidMessage missingMessageParam() {
+  VoidMessage? missingMessageParam() {
     return null;
   }
 
@@ -109,7 +111,7 @@ class WrongPostApi {
   void invalidVoidResponse(VoidMessage msg) {}
 
   @ApiMethod(method: 'POST', path: 'dynamicMessage')
-  VoidMessage dynamicMessage(message) {
+  VoidMessage? dynamicMessage(message) {
     return null;
   }
 }
@@ -117,44 +119,44 @@ class WrongPostApi {
 @ApiClass(version: 'v1test')
 class WrongPostApiWithPathQuery {
   @ApiMethod(method: 'POST', path: 'missingRequestParam/{id}')
-  VoidMessage missingRequestParam(String id) {
+  VoidMessage? missingRequestParam(String id) {
     return null;
   }
 
   @ApiMethod(method: 'POST', path: 'missingPathParam/{id}')
-  VoidMessage missingPathParam(SimpleMessage msg) {
+  VoidMessage? missingPathParam(SimpleMessage msg) {
     return null;
   }
 
   @ApiMethod(method: 'POST', path: 'missingPathRegExp')
-  VoidMessage missingPathRegExp(String path, VoidMessage msg) {
+  VoidMessage? missingPathRegExp(String path, VoidMessage msg) {
     return null;
   }
 
   @ApiMethod(method: 'POST', path: 'withStringQueryParam/{pathParam}')
-  VoidMessage withStringQueryParam(String pathParam, VoidMessage msg,
-      {String queryParam}) {
+  VoidMessage? withStringQueryParam(String pathParam, VoidMessage msg,
+      {String? queryParam}) {
     return null;
   }
 
   @ApiMethod(method: 'POST', path: 'withIntQueryParam/{pathParam}')
-  VoidMessage withIntQueryParam(String pathParam, VoidMessage msg,
-      {int queryParam}) {
+  VoidMessage? withIntQueryParam(String pathParam, VoidMessage msg,
+      {int? queryParam}) {
     return null;
   }
 
   @ApiMethod(method: 'POST', path: 'withDynamicQueryParam')
-  VoidMessage withDynamicQueryParam(VoidMessage msg, {queryParam}) {
+  VoidMessage? withDynamicQueryParam(VoidMessage msg, {queryParam}) {
     return null;
   }
 
   @ApiMethod(method: 'POST', path: 'withQueryNoMsg/{queryParam}')
-  VoidMessage withQueryNoMsg({String queryParam}) {
+  VoidMessage? withQueryNoMsg({String? queryParam}) {
     return null;
   }
 
   @ApiMethod(method: 'POST', path: 'withOptionalNoMsg')
-  VoidMessage withOptionalNoMsg([String queryParam]) {
+  VoidMessage? withOptionalNoMsg([String? queryParam]) {
     return null;
   }
 }
@@ -168,7 +170,7 @@ void main() {
       expect(apiCfg.methods.length, 4);
       var discoveryDoc =
           apiCfg.generateDiscoveryDocument('http://localhost:8080', null);
-      var json = discoveryDocSchema.toResponse(discoveryDoc);
+      var json = discoveryDocSchema!.toResponse(discoveryDoc);
       var expectedSchemas = {
         'SimpleMessage': {
           'id': 'SimpleMessage',
@@ -227,7 +229,7 @@ void main() {
       expect(apiCfg.methods.length, 10);
       var discoveryDoc =
           apiCfg.generateDiscoveryDocument('http://localhost:8080', null);
-      var json = discoveryDocSchema.toResponse(discoveryDoc);
+      var json = discoveryDocSchema!.toResponse(discoveryDoc);
       var expectedSchemas = {
         'SimpleMessage': {
           'id': 'SimpleMessage',

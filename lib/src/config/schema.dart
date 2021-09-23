@@ -35,7 +35,7 @@ abstract class ApiConfigSchema<D, J> {
       ..type = 'object'
       ..properties = new Map<String, discovery.JsonSchema>();
     _properties.values.forEach((prop) {
-      schema.properties[prop.name] = prop.asDiscovery;
+      schema.properties![prop.name] = prop.asDiscovery;
     });
     return schema;
   }
@@ -44,8 +44,10 @@ abstract class ApiConfigSchema<D, J> {
   J toResponse(D result);
 }
 
-final Type _listOfMediaMessage = reflectType(List, [MediaMessage]).reflectedType;
+final Type _listOfMediaMessage =
+    reflectType(List, [MediaMessage]).reflectedType;
 
+// ignore: todo
 // TODO(jcollins-g): consider `J extends Map`
 class ConfigSchema<D, J> extends ApiConfigSchema<D, J> {
   ConfigSchema(String schemaName, ClassMirror schemaClass, bool isRequest)
@@ -55,7 +57,7 @@ class ConfigSchema<D, J> extends ApiConfigSchema<D, J> {
     if (request is Map) {
       InstanceMirror schema = schemaClass.newInstance(new Symbol(''), []);
       for (Symbol sym in _properties.keys) {
-        final ApiConfigSchemaProperty prop = _properties[sym];
+        final ApiConfigSchemaProperty prop = _properties[sym]!;
         try {
           if (request.containsKey(prop.name)) {
             final requestForSymbol = request[prop.name];
@@ -65,7 +67,8 @@ class ConfigSchema<D, J> extends ApiConfigSchema<D, J> {
               // If in form, there is an (input[type="file"] multiple) and the user
               // put only one file. It's not an error and it should be accept.
               // Maybe it cans be optimized.
-              if (schema.type.instanceMembers[sym].returnType.reflectedType == _listOfMediaMessage &&
+              if (schema.type.instanceMembers[sym]!.returnType.reflectedType ==
+                      _listOfMediaMessage &&
                   requestForSymbol is MediaMessage) {
                 schema.setField(sym, [requestForSymbol]);
               } else if (requestForSymbol is List) {
@@ -89,7 +92,7 @@ class ConfigSchema<D, J> extends ApiConfigSchema<D, J> {
     }
     throw new BadRequestError(
         'Invalid parameter: \'$request\', should be an instance of type '
-            '\'$schemaName\'.');
+        '\'$schemaName\'.');
   }
 
   J toResponse(D result) {
@@ -108,12 +111,12 @@ class ConfigSchema<D, J> extends ApiConfigSchema<D, J> {
 // Schema for explicitly handling List<'some value'> as either return
 // or argument type. For the arguments it is only supported for POST requests.
 class NamedListSchema<D> extends ApiConfigSchema<List<D>, List> {
-  ApiConfigSchemaProperty _itemsProperty;
+  ApiConfigSchemaProperty? _itemsProperty;
 
   NamedListSchema(String schemaName, ClassMirror schemaClass, bool isRequest)
       : super(schemaName, schemaClass, isRequest);
 
-  void initItemsProperty(ApiConfigSchemaProperty itemsProperty) {
+  void initItemsProperty(ApiConfigSchemaProperty? itemsProperty) {
     assert(_itemsProperty == null);
     _itemsProperty = itemsProperty;
   }
@@ -125,30 +128,33 @@ class NamedListSchema<D> extends ApiConfigSchema<List<D>, List> {
     schema
       ..id = schemaName
       ..type = 'array'
-      ..items = _itemsProperty.asDiscovery;
+      ..items = _itemsProperty!.asDiscovery;
     return schema;
   }
 
   List<D> fromRequest(List request) {
+    // ignore: todo
     // TODO: Performance optimization, we don't need to decode a list of
     // primitive-type since it is already the correct list.
-    return request.map(_itemsProperty.fromRequest as D Function(Object)).toList();
+    return request.map<D>((d) => _itemsProperty!.fromRequest(d)!).toList();
   }
 
+  // ignore: todo
   // TODO: Performance optimization, we don't need to encode a list of
   // primitive-type since it is already the correct list.
-  List toResponse(List<D> result) => result.map(_itemsProperty.toResponse).toList();
+  List toResponse(List<D> result) =>
+      result.map(_itemsProperty!.toResponse).toList();
 }
 
 // Schema for explicitly handling Map<String, 'some value'> as either return
 // or argument type. For the arguments it is only supported for POST requests.
 class NamedMapSchema<D> extends ApiConfigSchema<Map<String, D>, Map> {
-  ApiConfigSchemaProperty _additionalProperty;
+  ApiConfigSchemaProperty? _additionalProperty;
 
   NamedMapSchema(String schemaName, ClassMirror schemaClass, bool isRequest)
       : super(schemaName, schemaClass, isRequest);
 
-  void initAdditionalProperty(ApiConfigSchemaProperty additionalProperty) {
+  void initAdditionalProperty(ApiConfigSchemaProperty? additionalProperty) {
     assert(_additionalProperty == null);
     _additionalProperty = additionalProperty;
   }
@@ -160,27 +166,29 @@ class NamedMapSchema<D> extends ApiConfigSchema<Map<String, D>, Map> {
     schema
       ..id = schemaName
       ..type = 'object'
-      ..additionalProperties = _additionalProperty.asDiscovery;
+      ..additionalProperties = _additionalProperty!.asDiscovery;
     return schema;
   }
 
   Map<String, D> fromRequest(Map request) {
     // Map from String to the type of the additional property.
     var decodedRequest = <String, D>{};
+    // ignore: todo
     // TODO: Performance optimization, we don't need to decode a map from
     // <String, primitive-type> since it is already the correct map.
     request.forEach((key, value) {
-      decodedRequest[key] = _additionalProperty.fromRequest(value);
+      decodedRequest[key] = _additionalProperty!.fromRequest(value);
     });
     return decodedRequest;
   }
 
   Map toResponse(Map<String, D> result) {
     var encodedResult = {};
+    // ignore: todo
     // TODO: Performance optimization, we don't need to encode a map from
     // <String, primitive-type> since it is already the correct map.
     result.forEach((key, value) {
-      encodedResult[key] = _additionalProperty.toResponse(value);
+      encodedResult[key] = _additionalProperty!.toResponse(value);
     });
     return encodedResult;
   }

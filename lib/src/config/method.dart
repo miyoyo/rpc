@@ -10,14 +10,14 @@ class ApiConfigMethod {
   final String name;
   final String path;
   final String httpMethod;
-  final String description;
+  final String? description;
 
   final InstanceMirror _instance;
   final List<ApiParameter> _pathParams;
-  final List<ApiParameter> _queryParams;
-  final ApiConfigSchema _requestSchema;
-  final ApiConfigSchema _responseSchema;
-  final UriParser _parser;
+  final List<ApiParameter>? _queryParams;
+  final ApiConfigSchema? _requestSchema;
+  final ApiConfigSchema? _responseSchema;
+  final UriParser? _parser;
 
   ApiConfigMethod(
       this.id,
@@ -34,13 +34,14 @@ class ApiConfigMethod {
       this._parser);
 
   bool matches(ParsedHttpApiRequest request) {
-    UriMatch match = _parser.match(request.methodUri);
+    UriMatch? match = _parser?.match(request.methodUri) ?? null;
     if (match == null) {
       return false;
     }
     assert(match.rest.path.length == 0);
     match.parameters.forEach((key, value) {
-      match.parameters[key] = Uri.decodeFull(value);
+      //TODO: Very horrible no good very bad hack
+      match.parameters[key] = Uri.decodeFull(value ?? "");
     });
     request.pathParameters = match.parameters;
     return true;
@@ -69,7 +70,7 @@ class ApiConfigMethod {
       method.parameters[param.name] = schema;
     });
     if (_queryParams != null) {
-      _queryParams.forEach((param) {
+      _queryParams!.forEach((param) {
         var schema = new discovery.JsonSchema();
         schema
           ..type = param.isInt
@@ -83,26 +84,24 @@ class ApiConfigMethod {
         method.parameters[param.name] = schema;
       });
     }
-    if (_requestSchema != null && _requestSchema.containsData) {
+    if (_requestSchema != null && _requestSchema!.containsData) {
       method.request = new discovery.RestMethodRequest()
-        ..P_ref = _requestSchema.schemaName;
+        ..P_ref = _requestSchema!.schemaName;
     }
-    if (_responseSchema != null && _responseSchema.containsData) {
-      if (_responseSchema.schemaClass == reflectClass(MediaMessage)) {
+    if (_responseSchema != null && _responseSchema!.containsData) {
+      if (_responseSchema!.schemaClass == reflectClass(MediaMessage)) {
         method.supportsMediaDownload = true;
       }
       method.response = new discovery.RestMethodResponse()
-        ..P_ref = _responseSchema.schemaName;
+        ..P_ref = _responseSchema!.schemaName;
     }
     return method;
   }
 
-  Future<HttpApiResponse> invokeHttpRequest(
+  Future<HttpApiResponse /*!*/ > invokeHttpRequest(
       ParsedHttpApiRequest request) async {
     List<dynamic> positionalParams = [];
     // Add path parameters to params in the correct order.
-    assert(_pathParams != null);
-    assert(request.pathParameters != null);
     for (int i = 0; i < _pathParams.length; ++i) {
       var param = _pathParams[i];
       var value = request.pathParameters[param.name];
@@ -128,10 +127,10 @@ class ApiConfigMethod {
       }
     }
     // Build named parameter map for query parameters.
-    Map<Symbol, dynamic> namedParams = {};
-    if (_queryParams != null && request.queryParameters != null) {
-      for (int i = 0; i < _queryParams.length; ++i) {
-        var param = _queryParams[i];
+    Map<Symbol /*!*/, dynamic> namedParams = {};
+    if (_queryParams != null) {
+      for (int i = 0; i < _queryParams!.length; ++i) {
+        var param = _queryParams![i];
         // Check if there is a parameter value for the given name.
         var value = request.queryParameters[param.name];
         if (value != null) {
@@ -157,7 +156,7 @@ class ApiConfigMethod {
       }
     }
     // We run the entire invocation and creation of the httpApiResponse inside
-    // a separate scope containing the invocation context. This allows the
+    // a separate scope containing the invocation context!. This allows the
     // implementor of the API to see the current request's headers, url, etc.
     // and to provide response headers and possibly other (future) values to be
     // used in the response.
@@ -190,7 +189,7 @@ class ApiConfigMethod {
       dynamic resultAsJson = {};
       var resultBody;
       var statusCode;
-      if (_responseSchema != null && _responseSchema.containsData) {
+      if (_responseSchema != null && _responseSchema!.containsData) {
         if (apiResult == null) {
           // We don't allow for method to return null if they have specified a
           // response schema. Log the error and return internal server error to
@@ -204,9 +203,9 @@ class ApiConfigMethod {
               drainRequest: false);
         }
         var resultAsBytes;
-        final alt = context.requestUri.queryParameters['alt'];
+        final alt = context!.requestUri.queryParameters['alt'];
         if (apiResult is! MediaMessage || alt == 'json') {
-          resultAsJson = _responseSchema.toResponse(apiResult);
+          resultAsJson = _responseSchema!.toResponse(apiResult);
           rpcLogger
               .finest('Successfully encoded result as json: $resultAsJson');
           resultAsBytes = request.jsonToBytes.convert(resultAsJson);
@@ -218,43 +217,43 @@ class ApiConfigMethod {
             rpcLogger.warning(
                 'Method $name returned MediaMessage without contentType');
           } else {
-            context.responseHeaders[HttpHeaders.contentTypeHeader] =
+            context!.responseHeaders[HttpHeaders.contentTypeHeader] =
                 apiResult.contentType;
           }
           if (apiResult.updated != null)
-            context.responseHeaders[HttpHeaders.lastModifiedHeader] =
-                formatHttpDate(apiResult.updated);
+            context!.responseHeaders[HttpHeaders.lastModifiedHeader] =
+                formatHttpDate(apiResult.updated!);
           if (apiResult.contentEncoding != null)
-            context.responseHeaders[HttpHeaders.contentEncodingHeader] =
+            context!.responseHeaders[HttpHeaders.contentEncodingHeader] =
                 apiResult.contentEncoding;
           if (apiResult.contentLanguage != null)
-            context.responseHeaders[HttpHeaders.contentLanguageHeader] =
+            context!.responseHeaders[HttpHeaders.contentLanguageHeader] =
                 apiResult.contentLanguage;
           if (apiResult.md5Hash != null) {
-            context.responseHeaders[HttpHeaders.contentMD5Header] =
+            context!.responseHeaders[HttpHeaders.contentMD5Header] =
                 apiResult.md5Hash;
           }
         }
 
         if (apiResult is MediaMessage) {
           // Better solution to force cache?
-          context.responseHeaders.remove(HttpHeaders.pragmaHeader);
+          context!.responseHeaders.remove(HttpHeaders.pragmaHeader);
           if (apiResult.cacheControl != null) {
-            context.responseHeaders[HttpHeaders.cacheControlHeader] =
+            context!.responseHeaders[HttpHeaders.cacheControlHeader] =
                 apiResult.cacheControl;
           } else {
-            context.responseHeaders.remove(HttpHeaders.cacheControlHeader);
+            context!.responseHeaders.remove(HttpHeaders.cacheControlHeader);
           }
 
-          if (context.requestHeaders[HttpHeaders.ifModifiedSinceHeader] !=
+          if (context!.requestHeaders[HttpHeaders.ifModifiedSinceHeader] !=
               null) {
             DateTime ifModifiedSince = parseHttpDate(
-                context.requestHeaders[HttpHeaders.ifModifiedSinceHeader]);
-            if (ifModifiedSince != null &&
-                !apiResult.updated.isAfter(ifModifiedSince)) {
-              context.responseHeaders.remove(HttpHeaders.contentTypeHeader);
+                context!.requestHeaders[HttpHeaders.ifModifiedSinceHeader]);
+            if (apiResult.updated != null &&
+                !apiResult.updated!.isAfter(ifModifiedSince)) {
+              context!.responseHeaders.remove(HttpHeaders.contentTypeHeader);
               return new HttpApiResponse(
-                  HttpStatus.notModified, null, context.responseHeaders);
+                  HttpStatus.notModified, null, context!.responseHeaders);
             }
           }
         }
@@ -267,14 +266,14 @@ class ApiConfigMethod {
       }
       // If the api method has set a specific response status code use that
       // instead of the above default based on the result content.
-      if (context.responseStatusCode != null) {
-        statusCode = context.responseStatusCode;
+      if (context!.responseStatusCode != null) {
+        statusCode = context!.responseStatusCode;
       }
       var response =
-          new HttpApiResponse(statusCode, resultBody, context.responseHeaders);
+          new HttpApiResponse(statusCode, resultBody, context!.responseHeaders);
       logResponse(response, resultAsJson);
       return response;
-    });
+    }) as Future<HttpApiResponse>;
   }
 
   Future<dynamic> invokeNoBody(ParsedHttpApiRequest request,
@@ -290,16 +289,17 @@ class ApiConfigMethod {
       List<dynamic> positionalParams, Map<Symbol, dynamic> namedParams) async {
     assert(_requestSchema != null);
     // Decode request body parameters to json.
+    // ignore: todo
     // TODO: support other encodings
     dynamic decodedRequest = {};
     try {
-      if (_requestSchema.containsData) {
+      if (_requestSchema!.containsData) {
         decodedRequest = (await parseRequestBody(request)).body;
         logRequest(request, decodedRequest);
       }
       // The request schema is the last positional parameter, so just adding
       // it to the list of position parameters.
-      final schema = _requestSchema.fromRequest(decodedRequest);
+      final schema = _requestSchema!.fromRequest(decodedRequest);
       positionalParams.add(schema);
     } catch (error) {
       rpcLogger.warning('Failed to decode request body: $error');
@@ -307,7 +307,7 @@ class ApiConfigMethod {
         if (error.message == 'Unexpected end of input') {
           // The method expects a body and none was passed.
           throw new BadRequestError('Method \'$name\' requires an instance of '
-              '${_requestSchema.schemaName}. Passing the empty request is not '
+              '${_requestSchema!.schemaName}. Passing the empty request is not '
               'supported.');
         }
       } else if (error is RpcError) {

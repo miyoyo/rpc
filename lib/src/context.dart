@@ -14,7 +14,8 @@ import 'utils.dart';
 
 const INVOCATION_CONTEXT = #rpc.invocationContext;
 
-InvocationContext get context => ss.lookup(INVOCATION_CONTEXT);
+InvocationContext? get context =>
+    ss.lookup(INVOCATION_CONTEXT) as InvocationContext?;
 
 // Invocation context used to give access to the current request information
 // in the invoked api methods.
@@ -25,13 +26,13 @@ class InvocationContext {
   final Uri requestUri;
   // Request cookies (this is optional and not currently supported when called
   // via the shelf_rpc package).
-  final List<Cookie> requestCookies;
+  final List<Cookie>? requestCookies;
   // The responseHeaders are used in the HTTP response returned by the server.
   // NOTE: we use a canonicalized map with a method lowercasing each key before
   // use to ensure the map will not contain duplicates due to different casing.
   final CanonicalizedMap<String, String, dynamic> responseHeaders;
   // When set overrides the default HTTP response status code.
-  int responseStatusCode = null;
+  int? responseStatusCode = null;
 
   InvocationContext(ParsedHttpApiRequest request)
       : requestHeaders = request.headers,

@@ -2,6 +2,8 @@
 // for details. All rights reserved. Use of this source code is governed by a
 // BSD-style license that can be found in the LICENSE file.
 
+
+
 library api_get_method_tests;
 
 import 'package:rpc/rpc.dart';
@@ -13,12 +15,12 @@ import 'package:test/test.dart';
 @ApiClass(version: 'v1')
 class CorrectGetApi {
   @ApiMethod(path: 'minimumGet')
-  VoidMessage minimumGet() {
+  VoidMessage? minimumGet() {
     return null;
   }
 
   @ApiMethod(name: 'namedGet', path: 'namedGet')
-  VoidMessage namedGet() {
+  VoidMessage? namedGet() {
     return null;
   }
 
@@ -27,7 +29,7 @@ class CorrectGetApi {
       method: 'GET',
       path: 'fullGet',
       description: 'A method with all annotations set')
-  VoidMessage fullGet() {
+  VoidMessage? fullGet() {
     return null;
   }
 }
@@ -35,42 +37,42 @@ class CorrectGetApi {
 @ApiClass(version: 'v1')
 class CorrectGetApiWithPath {
   @ApiMethod(path: 'getWithString/{aString}')
-  VoidMessage getWithString(String aString) {
+  VoidMessage? getWithString(String aString) {
     return null;
   }
 
   @ApiMethod(path: 'getWithInt/{anInt}')
-  VoidMessage getWithInt(int anInt) {
+  VoidMessage? getWithInt(int anInt) {
     return null;
   }
 
   @ApiMethod(path: 'getWithStringInt/{aString}/{anInt}')
-  VoidMessage getWithStringInt(String aString, int anInt) {
+  VoidMessage? getWithStringInt(String aString, int anInt) {
     return null;
   }
 
   @ApiMethod(path: 'getWithIntString/{anInt}/{aString}')
-  VoidMessage getWithIntString(String anInt, int aString) {
+  VoidMessage? getWithIntString(String anInt, int aString) {
     return null;
   }
 
   @ApiMethod(path: 'getWithStringString/{aString1}/{aString2}')
-  VoidMessage getWithStringString(String aString1, String aString2) {
+  VoidMessage? getWithStringString(String aString1, String aString2) {
     return null;
   }
 
   @ApiMethod(path: 'getWithIntInt/{anInt1}/{anInt2}')
-  VoidMessage getWithIntInt(int anInt1, int anInt2) {
+  VoidMessage? getWithIntInt(int anInt1, int anInt2) {
     return null;
   }
 
   @ApiMethod(path: 'getWithIntKeywordInt/{anInt1}/keyword/{anInt2}')
-  VoidMessage getWithIntKeywordInt(int anInt1, int anInt2) {
+  VoidMessage? getWithIntKeywordInt(int anInt1, int anInt2) {
     return null;
   }
 
   @ApiMethod(path: 'getWithStringKeywordString/{aString1}/keyword/{aString2}')
-  VoidMessage getWithStringKeywordString(String aString1, String aString2) {
+  VoidMessage? getWithStringKeywordString(String aString1, String aString2) {
     return null;
   }
 }
@@ -78,52 +80,52 @@ class CorrectGetApiWithPath {
 @ApiClass(version: 'v1')
 class CorrectGetApiWithQuery {
   @ApiMethod(path: 'query1')
-  VoidMessage query1({String name}) {
+  VoidMessage? query1({String? name}) {
     return null;
   }
 
   @ApiMethod(path: 'query2')
-  VoidMessage query2({String qp1, String qp2}) {
+  VoidMessage? query2({String? qp1, String? qp2}) {
     return null;
   }
 
   @ApiMethod(path: 'query3')
-  VoidMessage query3({int qp}) {
+  VoidMessage? query3({int? qp}) {
     return null;
   }
 
   @ApiMethod(path: 'query4')
-  VoidMessage query4({String qp1, int qp2}) {
+  VoidMessage? query4({String? qp1, int? qp2}) {
     return null;
   }
 
   @ApiMethod(path: 'query5')
-  VoidMessage query5({int qp1, String qp2}) {
+  VoidMessage? query5({int? qp1, String? qp2}) {
     return null;
   }
 
   @ApiMethod(path: 'query6')
-  VoidMessage query6({int qp1, int qp2}) {
+  VoidMessage? query6({int? qp1, int? qp2}) {
     return null;
   }
 
   @ApiMethod(path: 'query7/{pathParam}')
-  VoidMessage query7(int pathParam, {int queryParam}) {
+  VoidMessage? query7(int pathParam, {int? queryParam}) {
     return null;
   }
 
   @ApiMethod(path: 'query8/{pathParam}')
-  VoidMessage query8(String pathParam, {String queryParam}) {
+  VoidMessage? query8(String pathParam, {String? queryParam}) {
     return null;
   }
 
   @ApiMethod(path: 'query9/{pathParam}')
-  VoidMessage query9(int pathParam, {String queryParam}) {
+  VoidMessage? query9(int pathParam, {String? queryParam}) {
     return null;
   }
 
   @ApiMethod(path: 'query10/{pathParam}')
-  VoidMessage query10(String pathParam, {int queryParam}) {
+  VoidMessage? query10(String pathParam, {int? queryParam}) {
     return null;
   }
 }
@@ -132,7 +134,7 @@ class CorrectGetApiWithQuery {
 // they are not specific to GET.
 class WrongGetApi {
   @ApiMethod(path: 'getWithMessageArg')
-  VoidMessage getWithMessageArg(VoidMessage requestMessage) {
+  VoidMessage? getWithMessageArg(VoidMessage requestMessage) {
     return null;
   }
 }
@@ -140,27 +142,27 @@ class WrongGetApi {
 @ApiClass(version: 'v1test')
 class WrongGetApiWithPathQuery {
   @ApiMethod(path: 'query1')
-  VoidMessage query1(String path) {
+  VoidMessage? query1(String path) {
     return null;
   }
 
   @ApiMethod(path: 'query2/{queryParam}')
-  VoidMessage query2(String pathParam, {String queryParam}) {
+  VoidMessage? query2(String pathParam, {String? queryParam}) {
     return null;
   }
 
   @ApiMethod(path: 'query3')
-  VoidMessage query3({queryParam}) {
+  VoidMessage? query3({queryParam}) {
     return null;
   }
 
   @ApiMethod(path: 'query4/{queryParam}')
-  VoidMessage query4({String queryParam}) {
+  VoidMessage? query4({String? queryParam}) {
     return null;
   }
 
   @ApiMethod(path: 'query5')
-  VoidMessage query5([String queryParam]) {
+  VoidMessage? query5([String? queryParam]) {
     return null;
   }
 }
@@ -174,7 +176,7 @@ void main() {
       expect(apiCfg.methods.length, 3);
       var discoveryDoc =
           apiCfg.generateDiscoveryDocument('http://localhost:8080', null);
-      var json = discoveryDocSchema.toResponse(discoveryDoc);
+      var json = discoveryDocSchema!.toResponse(discoveryDoc);
       var expectedMethods = {
         'minimumGet': {
           'id': 'CorrectGetApi.minimumGet',
@@ -210,7 +212,7 @@ void main() {
       expect(apiCfg.methods.length, 8);
       var discoveryDoc =
           apiCfg.generateDiscoveryDocument('http://localhost:8080', null);
-      var json = discoveryDocSchema.toResponse(discoveryDoc);
+      var json = discoveryDocSchema!.toResponse(discoveryDoc);
       var expectedMethods = {
         'getWithString': {
           'id': 'CorrectGetApiWithPath.getWithString',
@@ -372,7 +374,7 @@ void main() {
       expect(apiCfg.methods.length, 10);
       var discoveryDoc =
           apiCfg.generateDiscoveryDocument('http://localhost:8080', null);
-      var json = discoveryDocSchema.toResponse(discoveryDoc);
+      var json = discoveryDocSchema!.toResponse(discoveryDoc);
       var expectedMethods = {
         'query1': {
           'id': 'CorrectGetApiWithQuery.query1',

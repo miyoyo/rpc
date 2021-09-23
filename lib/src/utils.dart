@@ -33,14 +33,15 @@ const double LARGEST_FLOAT = 3.4e38;
 final Logger rpcLogger = new Logger('rpc');
 
 // Used to generate the etag.
-final ApiConfigSchema discoveryDocSchema =
-    new ApiParser().parseSchema(reflectType(discovery.RestDescription), false);
+final ApiConfigSchema? discoveryDocSchema = new ApiParser()
+    .parseSchema(reflectType(discovery.RestDescription) as ClassMirror, false);
 
 // Utility method for creating an HTTP error response given an exception.
 // Optionally drains the request body.
 Future<HttpApiResponse> httpErrorResponse(
     HttpApiRequest request, Exception error,
-    {StackTrace stack, bool drainRequest: true}) async {
+    {StackTrace? stack, bool drainRequest: true}) async {
+  // ignore: todo
   // TODO support more encodings.
   var response;
   if (error is RpcError) {
@@ -115,8 +116,6 @@ void logMethodInvocation(Symbol symbol, List<dynamic> positionalParams,
   if (!rpcLogger.isLoggable(Level.FINE)) {
     return;
   }
-  assert(positionalParams != null);
-  assert(namedParams != null);
   var msg = new StringBuffer();
   msg
     ..writeln('\nInvoking method: ${MirrorSystem.getName(symbol)} with:')
